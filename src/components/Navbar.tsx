@@ -26,45 +26,53 @@ const Navbar = () => {
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
+        isScrolled ? "bg-white shadow-lg py-2" : "bg-white/95 backdrop-blur-sm py-4"
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-insurance-purple">Salud Para Ti</span>
+        <Link to="/" className="flex items-center space-x-3">
+          <img 
+            src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png" 
+            alt="SALUS ASEGURADORA" 
+            className="h-12 w-auto"
+          />
+          <div className="hidden sm:block">
+            <span className="text-2xl font-bold text-salus-gray">SALUS</span>
+            <div className="text-sm text-salus-gray-light font-medium">ASEGURADORA</div>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-gray-800 hover:text-insurance-purple font-medium">
+          <Link to="/" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
             Inicio
           </Link>
-          <Link to="/planes" className="text-gray-800 hover:text-insurance-purple font-medium">
+          <Link to="/planes" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
             Planes
           </Link>
-          <Link to="/coberturas" className="text-gray-800 hover:text-insurance-purple font-medium">
+          <Link to="/coberturas" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
             Coberturas
           </Link>
-          <Link to="/nosotros" className="text-gray-800 hover:text-insurance-purple font-medium">
+          <Link to="/nosotros" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
             Nosotros
           </Link>
-          <Link to="/contacto" className="text-gray-800 hover:text-insurance-purple font-medium">
+          <Link to="/contacto" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
             Contacto
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="outline" className="border-insurance-purple text-insurance-purple hover:bg-insurance-purple hover:text-white">
+          <Button variant="outline" className="border-salus-blue text-salus-blue hover:bg-salus-blue hover:text-white">
             Iniciar Sesión
           </Button>
-          <Button className="bg-insurance-orange hover:bg-orange-600 text-white">
+          <Button className="bg-salus-blue hover:bg-salus-blue-dark text-white">
             Cotizar Ahora
           </Button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-gray-800"
+          className="md:hidden text-salus-gray"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -73,48 +81,48 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden bg-white shadow-lg absolute top-full left-0 w-full py-4 animate-fade-in">
+        <div className="md:hidden bg-white shadow-lg absolute top-full left-0 w-full py-4 animate-fade-in border-t">
           <div className="container mx-auto px-4 flex flex-col space-y-4">
             <Link
               to="/"
-              className="text-gray-800 hover:text-insurance-purple font-medium py-2"
+              className="text-salus-gray hover:text-salus-blue font-medium py-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Inicio
             </Link>
             <Link
               to="/planes"
-              className="text-gray-800 hover:text-insurance-purple font-medium py-2"
+              className="text-salus-gray hover:text-salus-blue font-medium py-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Planes
             </Link>
             <Link
               to="/coberturas"
-              className="text-gray-800 hover:text-insurance-purple font-medium py-2"
+              className="text-salus-gray hover:text-salus-blue font-medium py-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Coberturas
             </Link>
             <Link
               to="/nosotros"
-              className="text-gray-800 hover:text-insurance-purple font-medium py-2"
+              className="text-salus-gray hover:text-salus-blue font-medium py-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Nosotros
             </Link>
             <Link
               to="/contacto"
-              className="text-gray-800 hover:text-insurance-purple font-medium py-2"
+              className="text-salus-gray hover:text-salus-blue font-medium py-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Contacto
             </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="outline" className="border-insurance-purple text-insurance-purple hover:bg-insurance-purple hover:text-white">
+              <Button variant="outline" className="border-salus-blue text-salus-blue hover:bg-salus-blue hover:text-white">
                 Iniciar Sesión
               </Button>
-              <Button className="bg-insurance-orange hover:bg-orange-600 text-white">
+              <Button className="bg-salus-blue hover:bg-salus-blue-dark text-white">
                 Cotizar Ahora
               </Button>
             </div>

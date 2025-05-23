@@ -63,12 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom health insurance color palette
-				insurance: {
-					purple: '#9b87f5',
-					blue: '#D3E4FD',
-					orange: '#F97316',
-					gray: '#8E9196',
+				// Colores institucionales de SALUS ASEGURADORA
+				salus: {
+					blue: '#007BFF',
+					'blue-dark': '#0056B3',
+					gray: '#343A40',
+					'gray-light': '#6C757D',
+					white: '#FFFFFF',
 				}
 			},
 			borderRadius: {
