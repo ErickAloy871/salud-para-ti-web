@@ -8,7 +8,7 @@ const testimonials = [
     name: "María González",
     role: "Cliente desde 2020",
     avatar: "https://randomuser.me/api/portraits/women/11.jpg",
-    content: "El servicio ha sido excepcional. Cuando mi hijo necesitó atención urgente, el seguro respondió inmediatamente y cubrió todos los gastos. La tranquilidad que me da Salud Para Ti no tiene precio.",
+    content: "El servicio ha sido excepcional. Cuando mi hijo necesitó atención urgente, el seguro respondió inmediatamente y cubrió todos los gastos. La tranquilidad que me da SALUS no tiene precio.",
     rating: 5,
   },
   {
@@ -16,7 +16,7 @@ const testimonials = [
     name: "Carlos Rodríguez",
     role: "Cliente desde 2018",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    content: "Después de comparar varias aseguradoras, elegí Salud Para Ti por su cobertura completa y precio justo. Cuando necesité una operación, todo el proceso fue sin complicaciones y con excelente atención.",
+    content: "Después de comparar varias aseguradoras, elegí SALUS por su cobertura completa y precio justo. Cuando necesité una operación, todo el proceso fue sin complicaciones y con excelente atención.",
     rating: 5,
   },
   {
@@ -32,7 +32,7 @@ const testimonials = [
     name: "Roberto Méndez",
     role: "Cliente desde 2019",
     avatar: "https://randomuser.me/api/portraits/men/53.jpg",
-    content: "Como dueño de un negocio, busqué una aseguradora que ofreciera buen servicio para mis empleados. Salud Para Ti superó mis expectativas con planes flexibles y excelente servicio.",
+    content: "Como dueño de un negocio, busqué una aseguradora que ofreciera buen servicio para mis empleados. SALUS superó mis expectativas con planes flexibles y excelente servicio.",
     rating: 5,
   },
 ];

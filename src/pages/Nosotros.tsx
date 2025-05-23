@@ -31,7 +31,7 @@ const NosotrosPage = () => {
               <div className="w-full md:w-1/2">
                 <h2 className="text-3xl font-bold mb-6">Nuestra Historia</h2>
                 <p className="text-gray-600 mb-4">
-                  Fundada en 2010, Salud Para Ti nació con la misión de revolucionar la industria de seguros de salud en México, ofreciendo planes accesibles y con cobertura completa para todas las familias mexicanas.
+                  Fundada en 2010, Salus nació con la misión de revolucionar la industria de seguros de salud en México, ofreciendo planes accesibles y con cobertura completa para todas las familias mexicanas.
                 </p>
                 <p className="text-gray-600 mb-4">
                   Desde nuestros inicios, nos hemos comprometido a proporcionar servicios de calidad, atención personalizada y una red médica de excelencia para cuidar de la salud de nuestros asegurados.
