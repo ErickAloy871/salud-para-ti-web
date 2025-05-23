@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { Shield, Phone } from "lucide-react";
+import { Shield, Phone, CheckCircle } from "lucide-react";
 
 const CallToAction = () => {
   return (
