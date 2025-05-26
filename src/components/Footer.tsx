@@ -105,8 +105,8 @@ const Footer = () => {
               </li>
               <li className="text-gray-300">
                 Av. Principal #123<br />
-                Ciudad de México, CP 12345<br />
-                México
+                Ambato, Tungurahua<br />
+                Ecuador
               </li>
             </ul>
           </div>
