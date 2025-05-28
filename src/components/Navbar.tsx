@@ -56,18 +56,14 @@ const Navbar = () => {
           <Link to="/nosotros" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
             Nosotros
           </Link>
-          <Link to="/contacto" className="text-salus-gray hover:text-salus-blue font-medium transition-colors">
-            Contacto
-          </Link>
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="outline" className="border-salus-blue text-salus-blue hover:bg-salus-blue hover:text-white">
-            Iniciar Sesión
-          </Button>
-          <Button className="bg-salus-blue hover:bg-salus-blue-dark text-white">
-            Cotizar Ahora
-          </Button>
+          <Link to="/login">
+            <Button className="bg-salus-blue hover:bg-salus-blue-dark text-white">
+              Iniciar Sesión
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -111,20 +107,12 @@ const Navbar = () => {
             >
               Nosotros
             </Link>
-            <Link
-              to="/contacto"
-              className="text-salus-gray hover:text-salus-blue font-medium py-2 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Contacto
-            </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="outline" className="border-salus-blue text-salus-blue hover:bg-salus-blue hover:text-white">
-                Iniciar Sesión
-              </Button>
-              <Button className="bg-salus-blue hover:bg-salus-blue-dark text-white">
-                Cotizar Ahora
-              </Button>
+              <Link to="/login">
+                <Button className="bg-salus-blue hover:bg-salus-blue-dark text-white w-full">
+                  Iniciar Sesión
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
