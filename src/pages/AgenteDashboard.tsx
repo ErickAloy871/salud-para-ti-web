@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Users,
   ClipboardList,
@@ -9,6 +8,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AgenteDashboard = () => {
   const [view, setView] = useState("clientes");
