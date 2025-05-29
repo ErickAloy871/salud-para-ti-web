@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Users,
   ClipboardList,
@@ -12,6 +13,19 @@ import {
 const AgenteDashboard = () => {
   const [view, setView] = useState("clientes");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+    if (usuario.tipo !== "asesor") {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("usuario");
+    navigate("/login");
+  };
 
   const navItem = (
     id: string,
@@ -74,6 +88,7 @@ const AgenteDashboard = () => {
 
           <div className="mt-6 w-full flex justify-center">
             <button
+              onClick={handleLogout}
               className="w-full max-w-[200px] flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-100 text-salus-gray hover:bg-red-500 hover:text-white font-medium transition shadow-md hover:shadow-lg"
             >
               <LogOut className="w-5 h-5" />

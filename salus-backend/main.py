@@ -32,20 +32,28 @@ def get_db():
         db.close()
 
 class LoginRequest(BaseModel):
-    username: str
+    correo: str
     password: str
 
 @app.post("/login")
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    usuario = db.query(Usuario).filter(Usuario.email == data.username).first()
-    if not usuario or usuario.contrasena != data.password:
+    usuario = db.query(Usuario).filter(Usuario.correo == data.correo).first()
+    if not usuario or usuario.password != data.password:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    if not usuario.activo:
+        raise HTTPException(status_code=403, detail="Usuario inactivo")
     return {
         "mensaje": "Login exitoso",
         "usuario": {
-            "id": usuario.id,
+            "id_usuario": usuario.id_usuario,
+            "correo": usuario.correo,
+            "username": usuario.username,
             "nombre": usuario.nombre,
-            "email": usuario.email
+            "apellido": usuario.apellido,
+            "tipo": usuario.tipo,
+            "activo": usuario.activo,
+            "cedula": usuario.cedula,
+            "telefono": usuario.telefono
         }
     }
 

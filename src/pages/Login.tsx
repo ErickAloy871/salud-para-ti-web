@@ -8,13 +8,16 @@ import { Shield, Eye, EyeOff } from "lucide-react";
 
 // ✅ Tipo personalizado para la respuesta del backend
 type LoginResponse = {
-  tipo: string;
   mensaje: string;
+  usuario: {
+    tipo: string;
+    // Puedes agregar otros campos si los necesitas
+  };
 };
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    email: "",
+    correo: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -27,25 +30,27 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       const response = await axios.post<LoginResponse>("http://localhost:8000/login", {
-        username: formData.email,
+        correo: formData.correo,
         password: formData.password,
       });
 
-      const { tipo, mensaje } = response.data;
+      const { mensaje, usuario } = response.data;
+
+      // Guarda el usuario en localStorage
+      localStorage.setItem("usuario", JSON.stringify(usuario));
 
       alert(mensaje);
 
-      if (tipo === "admin") {
+      if (usuario.tipo === "admin" || usuario.tipo === "administrador") {
         navigate("/admin");
-      } else if (tipo === "cliente") {
+      } else if (usuario.tipo === "cliente") {
         navigate("/cliente");
-      } else if (tipo === "asesor") {
+      } else if (usuario.tipo === "asesor") {
         navigate("/asesor");
       } else {
-        alert("Tipo de usuario no reconocido");
+        alert(`Tipo de usuario no reconocido: ${usuario.tipo}`);
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
@@ -74,16 +79,16 @@ const LoginPage = () => {
           {/* Formulario de login */}
           <form onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="email" className="text-salus-gray">Correo electrónico</Label>
+              <Label htmlFor="correo" className="text-salus-gray">Correo electrónico</Label>
               <Input
-                id="email"
-                name="email"
+                id="correo"
+                name="correo"
                 type="email"
-                value={formData.email}
+                value={formData.correo}
                 onChange={handleChange}
                 required
                 className="mt-1 focus:ring-salus-blue focus:border-salus-blue"
-                placeholder="tu@email.com"
+                placeholder="Correo electrónico"
               />
             </div>
 

@@ -8,10 +8,12 @@ import {
   Menu,
   X
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ClienteDashboard = () => {
   const [view, setView] = useState("seguros");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navItem = (
     id: string,
@@ -33,6 +35,12 @@ const ClienteDashboard = () => {
       <span className="text-sm md:text-base">{label}</span>
     </button>
   );
+
+  const handleLogout = () => {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <div className="flex flex-col sm:flex-row h-screen bg-gray-100">
@@ -74,6 +82,7 @@ const ClienteDashboard = () => {
           <div className="mt-6 w-full flex justify-center">
             <button
               className="w-full max-w-[200px] flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-100 text-salus-gray hover:bg-red-500 hover:text-white font-medium transition shadow-md hover:shadow-lg"
+              onClick={handleLogout}
             >
               <LogOut className="w-5 h-5" />
               <span>Cerrar sesion</span>
