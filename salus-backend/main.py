@@ -11,17 +11,7 @@ app = FastAPI()
 # Permitir solicitudes desde el frontend (ajusta el origen si es necesario)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173", 
-        "http://localhost:3000", 
-        "http://localhost:8080", 
-        "http://192.168.1.29:8080/",
-        "http://172.22.224.1:8080",
-        "http://192.168.56.1:8080",
-        "http://192.168.83.1:8080",
-        "http://192.168.23.1:8080",
-        "http://10.79.16.131:8080"
-    ],
+    allow_origins=["*"],  # Permite solicitudes desde cualquier origen
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
