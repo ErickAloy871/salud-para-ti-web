@@ -1,28 +1,29 @@
 import { useState } from "react";
 import {
-  Shield,
   UserCog,
   Lock,
-  FileText,
-  LogOut,
   Users,
   ClipboardList,
   Stethoscope,
-  BarChart2
+  BarChart2,
+  LogOut,
+  Menu
 } from "lucide-react";
 
 const AdminDashboard = () => {
   const [view, setView] = useState("roles");
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const navItem = (
-    id: string,
-    icon: JSX.Element,
-    label: string
-  ) => (
+  const navItem = (id: string, icon: JSX.Element, label: string) => (
     <button
-      onClick={() => setView(id)}
-      className={`w-full flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-white hover:text-salus-blue transition ${
-        view === id ? "bg-white text-salus-blue font-semibold" : ""
+      onClick={() => {
+        setView(id);
+        setMenuOpen(false);
+      }}
+      className={`w-full flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-200 shadow hover:shadow-lg hover:bg-white hover:text-salus-blue ${
+        view === id
+          ? "bg-white text-salus-blue font-semibold shadow-md"
+          : "bg-salus-blue/80 text-white"
       }`}
     >
       {icon}
@@ -31,43 +32,50 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100">
+      {/* Encabezado móvil con menú hamburguesa */}
+      <div className="sm:hidden flex justify-between items-center bg-salus-blue p-4 text-white shadow-md">
+        <h1 className="font-bold text-lg">SALUS ADMIN</h1>
+        <button onClick={() => setMenuOpen(!menuOpen)}>
+          <Menu className="w-6 h-6" />
+        </button>
+      </div>
+
       {/* Sidebar */}
-      <aside className="bg-salus-blue text-white w-64 p-6 shadow-lg flex flex-col">
-        <div className="flex items-center mb-8 space-x-3">
-          <img
-            src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png"
-            alt="Logo"
-            className="h-10"
-          />
-          <h1 className="text-xl font-bold tracking-tight">SALUS ADMIN</h1>
-        </div>
+      {(menuOpen || window.innerWidth >= 640) && (
+        <aside className="bg-salus-blue w-full sm:w-64 p-6 shadow-2xl flex flex-col rounded-r-3xl text-white transition-all duration-300">
+          <div className="flex items-center mb-8 space-x-3">
+            <img
+              src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png"
+              alt="Logo"
+              className="h-10"
+            />
+            <h1 className="text-xl font-bold tracking-tight">SALUS ADMIN</h1>
+          </div>
 
-        <nav className="space-y-3">
-          {navItem("roles", <UserCog className="w-5 h-5" />, "Gestion de roles")}
-          {navItem("accesos", <Lock className="w-5 h-5" />, "Gestion de accesos")}
-          {navItem("clientes", <Users className="w-5 h-5" />, "Gestion de clientes")}
-          {navItem("seguros", <ClipboardList className="w-5 h-5" />, "Contratacion de seguros")}
-          {navItem("reembolsos", <Stethoscope className="w-5 h-5" />, "Reembolsos")}
-          {navItem("reportes", <BarChart2 className="w-5 h-5" />, "Reportes")}
-        </nav>
+          <nav className="space-y-3">
+            {navItem("roles", <UserCog className="w-5 h-5" />, "Gestion de roles")}
+            {navItem("accesos", <Lock className="w-5 h-5" />, "Gestion de accesos")}
+            {navItem("clientes", <Users className="w-5 h-5" />, "Gestion de clientes")}
+            {navItem("seguros", <ClipboardList className="w-5 h-5" />, "Contratacion de seguros")}
+            {navItem("reembolsos", <Stethoscope className="w-5 h-5" />, "Reembolsos")}
+            {navItem("reportes", <BarChart2 className="w-5 h-5" />, "Reportes")}
+          </nav>
 
-        {/* Boton Cerrar Sesion */}
-        <div className="mt-auto flex justify-center">
-          <button
-            className="w-full max-w-[200px] flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-100 text-salus-gray hover:bg-red-500 hover:text-white font-medium transition"
-          >
-            <LogOut className="w-5 h-5" />
-            <span>Cerrar sesion</span>
-          </button>
-        </div>
-      </aside>
+          <div className="mt-auto pt-6">
+            <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-100 text-salus-gray hover:bg-red-500 hover:text-white font-medium shadow hover:shadow-md transition">
+              <LogOut className="w-5 h-5" />
+              <span>Cerrar sesion</span>
+            </button>
+          </div>
+        </aside>
+      )}
 
-      {/* Main content */}
-      <main className="flex-1">
+      {/* Contenido principal */}
+      <main className="flex-1 overflow-auto">
         <header className="bg-white shadow-md p-4 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-salus-gray">Panel del Administrador</h2>
-          <div className="text-sm text-salus-gray-light">Bienvenido, Administrador</div>
+          <div className="text-sm text-salus-gray-light">Bienvenido</div>
         </header>
 
         <section className="p-6">
