@@ -1,10 +1,16 @@
-
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
 import { Shield, Eye, EyeOff } from "lucide-react";
+
+// ✅ Tipo personalizado para la respuesta del backend
+type LoginResponse = {
+  tipo: string;
+  mensaje: string;
+};
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -12,16 +18,39 @@ const LoginPage = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
-    // Aquí iría la lógica de autenticación
+
+    try {
+      const response = await axios.post<LoginResponse>("http://localhost:8000/login", {
+        username: formData.email,
+        password: formData.password,
+      });
+
+      const { tipo, mensaje } = response.data;
+
+      alert(mensaje);
+
+      if (tipo === "admin") {
+        navigate("/admin");
+      } else if (tipo === "cliente") {
+        navigate("/cliente");
+      } else if (tipo === "asesor") {
+        navigate("/asesor");
+      } else {
+        alert("Tipo de usuario no reconocido");
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      alert("Credenciales incorrectas o error de conexión");
+    }
   };
 
   return (
@@ -45,9 +74,7 @@ const LoginPage = () => {
           {/* Formulario de login */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="email" className="text-salus-gray">
-                Correo electrónico
-              </Label>
+              <Label htmlFor="email" className="text-salus-gray">Correo electrónico</Label>
               <Input
                 id="email"
                 name="email"
@@ -61,9 +88,7 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-salus-gray">
-                Contraseña
-              </Label>
+              <Label htmlFor="password" className="text-salus-gray">Contraseña</Label>
               <div className="relative mt-1">
                 <Input
                   id="password"
@@ -117,7 +142,6 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          {/* Enlaces adicionales */}
           <div className="mt-6 text-center">
             <p className="text-salus-gray-light">
               ¿No tienes una cuenta?{" "}
@@ -127,7 +151,6 @@ const LoginPage = () => {
             </p>
           </div>
 
-          {/* Enlace para volver al inicio */}
           <div className="mt-4 text-center">
             <Link to="/" className="text-sm text-salus-gray-light hover:text-salus-blue">
               ← Volver al inicio

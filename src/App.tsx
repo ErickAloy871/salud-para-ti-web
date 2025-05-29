@@ -11,6 +11,12 @@ import Nosotros from "./pages/Nosotros";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
+// ✅ Nueva vista del administrador
+import AdminDashboard from "./pages/AdminDashboard";
+import ClienteDashboard from "./pages/ClienteDashboard";
+import AgenteDashboard from "./pages/AgenteDashboard";
+
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,7 +31,15 @@ const App = () => (
           <Route path="/coberturas" element={<Coberturas />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/login" element={<Login />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* NUEVA RUTA PARA EL PANEL DE ADMIN */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          {/* NUEVA RUTA PARA EL PANEL DE CLIENTE*/}
+          <Route path="/cliente" element={<ClienteDashboard />} />
+          {/* NUEVA RUTA PARA EL PANEL DE AGENTE*/}
+          <Route path="/asesor" element={<AgenteDashboard />} />
+
+          {/* Ruta por defecto si no se encuentra */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
