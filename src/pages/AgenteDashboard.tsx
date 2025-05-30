@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Users,
@@ -8,6 +9,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import GestionClientes from "@/components/GestionClientes";
 
 const AgenteDashboard = () => {
   const [view, setView] = useState("clientes");
@@ -91,9 +93,7 @@ const AgenteDashboard = () => {
         </header>
 
         <section className="p-4 sm:p-6">
-          {view === "clientes" && (
-            <p className="text-salus-gray">Aquí va la gestión de clientes.</p>
-          )}
+          {view === "clientes" && <GestionClientes />}
           {view === "seguros" && (
             <p className="text-salus-gray">Aquí va la contratación de seguros.</p>
           )}

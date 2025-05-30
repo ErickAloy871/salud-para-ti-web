@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   UserCog,
@@ -10,6 +11,8 @@ import {
   Menu,
   X
 } from "lucide-react";
+import GestionRoles from "@/components/GestionRoles";
+import GestionClientes from "@/components/GestionClientes";
 
 const AdminDashboard = () => {
   const [view, setView] = useState("roles");
@@ -95,9 +98,9 @@ const AdminDashboard = () => {
         </header>
 
         <section className="p-4 sm:p-6">
-          {view === "roles" && <p className="text-salus-gray">Aquí va la gestión de roles.</p>}
+          {view === "roles" && <GestionRoles />}
           {view === "accesos" && <p className="text-salus-gray">Aquí va la gestión de accesos.</p>}
-          {view === "clientes" && <p className="text-salus-gray">Aquí va la gestión de clientes.</p>}
+          {view === "clientes" && <GestionClientes />}
           {view === "seguros" && <p className="text-salus-gray">Aquí va la contratación de seguros.</p>}
           {view === "reembolsos" && <p className="text-salus-gray">Aquí va la revisión de reembolsos.</p>}
           {view === "reportes" && <p className="text-salus-gray">Aquí van los reportes.</p>}
