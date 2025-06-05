@@ -12,6 +12,11 @@ type LoginResponse = {
   mensaje: string;
 };
 
+export function logout(navigate: (path: string) => void) {
+  localStorage.removeItem("token");
+  navigate("/login");
+}
+
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -29,27 +34,35 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post<LoginResponse>("http://localhost:8000/login", {
-        username: formData.email,
+      // Cambia los nombres de los campos para coincidir con el backend
+      const response = await axios.post("http://localhost:8000/login", {
+        correo: formData.email,
         password: formData.password,
       });
 
-      const { tipo, mensaje } = response.data;
+      const { usuario, token, mensaje } = response.data;
+
+      // Guarda el token para futuras peticiones protegidas
+      localStorage.setItem("token", token);
 
       alert(mensaje);
 
-      if (tipo === "admin") {
+      // Redirige según el tipo de usuario
+      if (usuario.tipo === 0) {
         navigate("/admin");
-      } else if (tipo === "cliente") {
+      } else if (usuario.tipo === 1) {
         navigate("/cliente");
-      } else if (tipo === "asesor") {
+      } else if (usuario.tipo === 2) {
         navigate("/asesor");
       } else {
         alert("Tipo de usuario no reconocido");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
-      alert("Credenciales incorrectas o error de conexión");
+      alert(
+        error.response?.data?.error ||
+        "Credenciales incorrectas o error de conexión"
+      );
     }
   };
 

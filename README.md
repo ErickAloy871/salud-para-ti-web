@@ -32,8 +32,15 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the frontend development server with auto-reloading and an instant preview.
 npm run dev
+
+# --- Levantar el backend (Node.js) ---
+# Abre otra terminal, navega a la carpeta del backend y ejecuta:
+cd salus-backend
+npm install
+node index.js
+# El backend estará disponible en http://localhost:8000 (o el puerto configurado).
 ```
 
 **Edit a file directly in GitHub**
