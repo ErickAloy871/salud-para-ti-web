@@ -9,6 +9,7 @@ import Planes from "./pages/Planes";
 import Coberturas from "./pages/Coberturas";
 import Nosotros from "./pages/Nosotros";
 import Login from "./pages/Login";
+import Asesores from "./pages/Asesores";
 import NotFound from "./pages/NotFound";
 
 // ✅ Nueva vista del administrador
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/coberturas" element={<Coberturas />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/asesores" element={<Asesores />} />
 
           {/* NUEVA RUTA PARA EL PANEL DE ADMIN */}
           <Route path="/admin" element={<AdminDashboard />} />

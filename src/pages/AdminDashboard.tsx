@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import GestionRoles from "@/components/GestionRoles";
 import GestionClientes from "@/components/GestionClientes";
+import ContratacionSeguros from "@/components/ContratacionSeguros";
 
 const AdminDashboard = () => {
   const [view, setView] = useState("roles");
@@ -101,7 +102,7 @@ const AdminDashboard = () => {
           {view === "roles" && <GestionRoles />}
           {view === "accesos" && <p className="text-salus-gray">Aquí va la gestión de accesos.</p>}
           {view === "clientes" && <GestionClientes />}
-          {view === "seguros" && <p className="text-salus-gray">Aquí va la contratación de seguros.</p>}
+          {view === "seguros" && <ContratacionSeguros />}
           {view === "reembolsos" && <p className="text-salus-gray">Aquí va la revisión de reembolsos.</p>}
           {view === "reportes" && <p className="text-salus-gray">Aquí van los reportes.</p>}
         </section>
