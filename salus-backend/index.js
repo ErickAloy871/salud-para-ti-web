@@ -6,7 +6,8 @@ const PORT = 8000;
 app.use(express.json());
 const allowedOrigins = [
     'http://localhost:3000',
-    'http://172.25.48.1:8080'
+    'http://172.25.48.1:8080',
+    'http://localhost:8080'
 ];
 
 app.use(cors({
