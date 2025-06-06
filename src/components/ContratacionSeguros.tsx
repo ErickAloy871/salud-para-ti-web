@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +22,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Clock, CheckCircle, X } from "lucide-react";
+import { FileText, Clock, CheckCircle, X, Plus, Trash2 } from "lucide-react";
+
+const beneficiarioSchema = z.object({
+  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  relacion: z.string().min(1, "Selecciona la relación familiar"),
+  porcentaje: z.number().min(1, "El porcentaje debe ser mayor a 0").max(100, "El porcentaje no puede ser mayor a 100"),
+  cedula: z.string().min(8, "La cédula debe tener al menos 8 dígitos").regex(/^\d+$/, "La cédula solo debe contener números"),
+  fechaNacimiento: z.string().min(1, "La fecha de nacimiento es requerida"),
+});
 
 const contratacionSchema = z.object({
   tipoSeguro: z.string().min(1, "Selecciona un tipo de seguro"),
@@ -48,6 +55,7 @@ const contratacionSchema = z.object({
 });
 
 type ContratacionForm = z.infer<typeof contratacionSchema>;
+type Beneficiario = z.infer<typeof beneficiarioSchema>;
 
 interface Solicitud {
   id: string;
@@ -61,6 +69,15 @@ interface Solicitud {
 const ContratacionSeguros = () => {
   const [activeTab, setActiveTab] = useState("formulario");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [esSeguroVida, setEsSeguroVida] = useState(false);
+  const [beneficiarios, setBeneficiarios] = useState<Beneficiario[]>([]);
+  const [nuevoBeneficiario, setNuevoBeneficiario] = useState<Partial<Beneficiario>>({
+    nombre: "",
+    relacion: "",
+    porcentaje: 0,
+    cedula: "",
+    fechaNacimiento: "",
+  });
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([
     {
       id: "001",
@@ -109,7 +126,75 @@ const ContratacionSeguros = () => {
     },
   });
 
+  const handleTipoSeguroChange = (value: string) => {
+    setEsSeguroVida(value === "Seguro de Vida");
+    if (value !== "Seguro de Vida") {
+      setBeneficiarios([]);
+    }
+  };
+
+  const agregarBeneficiario = () => {
+    if (!nuevoBeneficiario.nombre || !nuevoBeneficiario.relacion || !nuevoBeneficiario.porcentaje || !nuevoBeneficiario.cedula || !nuevoBeneficiario.fechaNacimiento) {
+      toast({
+        title: "Error",
+        description: "Completa todos los campos del beneficiario",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const totalPorcentaje = beneficiarios.reduce((sum, b) => sum + b.porcentaje, 0) + nuevoBeneficiario.porcentaje!;
+    
+    if (totalPorcentaje > 100) {
+      toast({
+        title: "Error",
+        description: "El porcentaje total no puede exceder 100%",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setBeneficiarios([...beneficiarios, nuevoBeneficiario as Beneficiario]);
+    setNuevoBeneficiario({
+      nombre: "",
+      relacion: "",
+      porcentaje: 0,
+      cedula: "",
+      fechaNacimiento: "",
+    });
+
+    toast({
+      title: "Beneficiario agregado",
+      description: "El beneficiario ha sido agregado exitosamente",
+    });
+  };
+
+  const eliminarBeneficiario = (index: number) => {
+    setBeneficiarios(beneficiarios.filter((_, i) => i !== index));
+  };
+
   const onSubmit = async (data: ContratacionForm) => {
+    if (esSeguroVida && beneficiarios.length === 0) {
+      toast({
+        title: "Error",
+        description: "Debes agregar al menos un beneficiario para el Seguro de Vida",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (esSeguroVida) {
+      const totalPorcentaje = beneficiarios.reduce((sum, b) => sum + b.porcentaje, 0);
+      if (totalPorcentaje !== 100) {
+        toast({
+          title: "Error", 
+          description: "El porcentaje total de beneficiarios debe ser exactamente 100%",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     
     // Simular envío del formulario
@@ -128,6 +213,9 @@ const ContratacionSeguros = () => {
     setSolicitudes([nuevaSolicitud, ...solicitudes]);
     
     console.log("Datos de contratación:", data);
+    if (esSeguroVida) {
+      console.log("Beneficiarios:", beneficiarios);
+    }
     
     toast({
       title: "Solicitud enviada",
@@ -135,6 +223,8 @@ const ContratacionSeguros = () => {
     });
     
     form.reset();
+    setBeneficiarios([]);
+    setEsSeguroVida(false);
     setIsSubmitting(false);
     setActiveTab("solicitudes");
   };
@@ -196,7 +286,10 @@ const ContratacionSeguros = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tipo de Seguro</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={(value) => {
+                        field.onChange(value);
+                        handleTipoSeguroChange(value);
+                      }} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecciona el tipo de seguro" />
@@ -413,6 +506,142 @@ const ContratacionSeguros = () => {
                     </FormItem>
                   )}
                 />
+
+                {/* Sección de Beneficiarios para Seguro de Vida */}
+                {esSeguroVida && (
+                  <div className="border-t pt-6 mt-6">
+                    <h4 className="text-lg font-semibold mb-4 text-salus-gray">
+                      Información de Beneficiarios
+                    </h4>
+                    
+                    <div className="bg-blue-50 rounded-lg p-4 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nombre Completo
+                          </label>
+                          <Input
+                            placeholder="Nombre del beneficiario"
+                            value={nuevoBeneficiario.nombre}
+                            onChange={(e) => setNuevoBeneficiario({
+                              ...nuevoBeneficiario,
+                              nombre: e.target.value
+                            })}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Relación Familiar
+                          </label>
+                          <Select
+                            value={nuevoBeneficiario.relacion}
+                            onValueChange={(value) => setNuevoBeneficiario({
+                              ...nuevoBeneficiario,
+                              relacion: value
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecciona" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="conyuge">Cónyuge</SelectItem>
+                              <SelectItem value="hijo">Hijo/a</SelectItem>
+                              <SelectItem value="padre">Padre/Madre</SelectItem>
+                              <SelectItem value="hermano">Hermano/a</SelectItem>
+                              <SelectItem value="otro">Otro</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Porcentaje (%)
+                          </label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="100"
+                            placeholder="0"
+                            value={nuevoBeneficiario.porcentaje || ""}
+                            onChange={(e) => setNuevoBeneficiario({
+                              ...nuevoBeneficiario,
+                              porcentaje: parseInt(e.target.value) || 0
+                            })}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Cédula
+                          </label>
+                          <Input
+                            placeholder="12345678"
+                            value={nuevoBeneficiario.cedula}
+                            onChange={(e) => setNuevoBeneficiario({
+                              ...nuevoBeneficiario,
+                              cedula: e.target.value
+                            })}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Fecha de Nacimiento
+                          </label>
+                          <Input
+                            type="date"
+                            value={nuevoBeneficiario.fechaNacimiento}
+                            onChange={(e) => setNuevoBeneficiario({
+                              ...nuevoBeneficiario,
+                              fechaNacimiento: e.target.value
+                            })}
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="button"
+                        onClick={agregarBeneficiario}
+                        className="w-full bg-salus-blue hover:bg-salus-blue-dark text-white"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Beneficiario
+                      </Button>
+                    </div>
+
+                    {/* Lista de beneficiarios agregados */}
+                    {beneficiarios.length > 0 && (
+                      <div className="mt-4">
+                        <h5 className="font-medium text-gray-700 mb-2">
+                          Beneficiarios Agregados ({beneficiarios.reduce((sum, b) => sum + b.porcentaje, 0)}% asignado)
+                        </h5>
+                        <div className="space-y-2">
+                          {beneficiarios.map((beneficiario, index) => (
+                            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                              <div className="flex-1">
+                                <span className="font-medium">{beneficiario.nombre}</span>
+                                <span className="text-gray-500 ml-2">({beneficiario.relacion})</span>
+                                <span className="text-salus-blue ml-2 font-semibold">{beneficiario.porcentaje}%</span>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => eliminarBeneficiario(index)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <Button 
                   type="submit" 
