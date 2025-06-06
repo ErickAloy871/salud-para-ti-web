@@ -1,122 +1,304 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Users,
-  ClipboardList,
-  Stethoscope,
-  BarChart2,
-  LogOut,
-  Menu,
-  X
-} from "lucide-react";
-import GestionClientes from "@/components/GestionClientes";
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import PerfilUsuario from "@/components/PerfilUsuario";
 import ContratacionSeguros from "@/components/ContratacionSeguros";
+import { 
+  Shield, 
+  Users, 
+  FileText, 
+  BarChart3, 
+  TrendingUp,
+  LogOut,
+  ChevronRight
+} from "lucide-react";
+
+type MenuOption = "dashboard" | "clientes" | "contratacion" | "reportes";
 
 const AgenteDashboard = () => {
-  const [view, setView] = useState("clientes");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<MenuOption>("dashboard");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Función para actualizar el estado según el tamaño de la ventana
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 640);
+      setIsSidebarOpen(window.innerWidth >= 768);
     };
+
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const navItem = (
-    id: string,
-    icon: JSX.Element,
-    label: string
-  ) => (
-    <button
-      onClick={() => {
-        setView(id);
-        setSidebarOpen(false);
-      }}
-      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl shadow-md transition-all duration-200 hover:shadow-xl hover:bg-white hover:text-salus-blue ${
-        view === id
-          ? "bg-white text-salus-blue font-semibold shadow-xl"
-          : "bg-salus-blue/80 text-white"
-      }`}
-    >
-      {icon}
-      <span className="text-sm md:text-base">{label}</span>
-    </button>
-  );
+  const handleLogout = () => {
+    navigate("/login");
+  };
 
-  return (
-    <div className="flex flex-col sm:flex-row h-screen bg-gray-100">
-      {/* Topbar for mobile */}
-      <div className="sm:hidden bg-salus-blue text-white p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png"
-            alt="Logo"
-            className="h-8"
-          />
-          <span className="text-lg font-bold">SALUS AGENTE</span>
-        </div>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
+  const menuItems = [
+    { id: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
+    { id: "clientes" as const, label: "Mis Clientes", icon: Users },
+    { id: "contratacion" as const, label: "Nueva Venta", icon: FileText },
+    { id: "reportes" as const, label: "Reportes", icon: TrendingUp },
+  ];
 
-      {/* Sidebar */}
-      {(sidebarOpen || isDesktop) && (
-        <aside className="bg-salus-blue w-full sm:w-64 p-6 shadow-2xl flex flex-col justify-between text-white rounded-r-3xl transition-all duration-300">
-          <div>
-            <div className="hidden sm:flex items-center gap-2 mb-6">
-              <img
-                src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png"
-                alt="Logo"
-                className="h-10"
-              />
-              <h1 className="text-xl font-bold tracking-tight">SALUS AGENTE</h1>
+  const renderContent = () => {
+    switch (activeMenu) {
+      case "clientes":
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4 text-salus-blue">Mis Clientes</h2>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600">Lista de clientes asignados al agente...</p>
+            </div>
+          </div>
+        );
+      case "contratacion":
+        return <ContratacionSeguros />;
+      case "reportes":
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4 text-salus-blue">Mis Reportes</h2>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600">Reportes de ventas del agente...</p>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="p-6 space-y-6">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold text-salus-gray">Dashboard del Agente</h1>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ventas Este Mes</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">12</div>
+                  <p className="text-xs text-muted-foreground">+20% vs mes anterior</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Mis Clientes</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">45</div>
+                  <p className="text-xs text-muted-foreground">+3 nuevos este mes</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Comisiones</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">$2,340</div>
+                  <p className="text-xs text-muted-foreground">Este mes</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Meta Mensual</CardTitle>
+                  <Shield className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">80%</div>
+                  <p className="text-xs text-muted-foreground">12/15 ventas</p>
+                </CardContent>
+              </Card>
             </div>
 
-            <nav className="flex flex-col gap-3 w-full">
-              {navItem("clientes", <Users className="w-5 h-5" />, "Gestion de clientes")}
-              {navItem("seguros", <ClipboardList className="w-5 h-5" />, "Contratacion de seguros")}
-              {navItem("reembolsos", <Stethoscope className="w-5 h-5" />, "Revisión de reembolsos")}
-              {navItem("reportes", <BarChart2 className="w-5 h-5" />, "Reportes")}
-              {navItem("gestion-seguros", <ClipboardList className="w-5 h-5" />, "Gestión de seguros")}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Ventas Recientes</CardTitle>
+                  <CardDescription>Últimas pólizas vendidas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">Juan Pérez - Seguro de Vida</p>
+                        <p className="text-sm text-gray-500">$420/mes</p>
+                      </div>
+                      <span className="text-xs text-gray-400">Hoy</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">María García - Seguro de Salud</p>
+                        <p className="text-sm text-gray-500">$69/mes</p>
+                      </div>
+                      <span className="text-xs text-gray-400">Ayer</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">Carlos López - Seguro de Vida</p>
+                        <p className="text-sm text-gray-500">$420/mes</p>
+                      </div>
+                      <span className="text-xs text-gray-400">Hace 2 días</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-            </nav>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Acciones Rápidas</CardTitle>
+                  <CardDescription>Tareas frecuentes</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 gap-3">
+                    <Button 
+                      variant="outline" 
+                      className="justify-start"
+                      onClick={() => setActiveMenu("contratacion")}
+                    >
+                      <FileText className="mr-2 h-4 w-4" />
+                      Nueva Venta
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="justify-start"
+                      onClick={() => setActiveMenu("clientes")}
+                    >
+                      <Users className="mr-2 h-4 w-4" />
+                      Ver Clientes
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="justify-start"
+                      onClick={() => setActiveMenu("reportes")}
+                    >
+                      <TrendingUp className="mr-2 h-4 w-4" />
+                      Ver Reportes
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
+        );
+    }
+  };
 
-          <div className="mt-6 w-full flex justify-center">
-            <button
-              className="w-full max-w-[200px] flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-100 text-salus-gray hover:bg-red-500 hover:text-white font-medium transition shadow-md hover:shadow-lg"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Cerrar sesion</span>
-            </button>
+  return (
+    <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+      <div className="flex h-screen w-full bg-gray-50">
+        <Sidebar>
+          <SidebarHeader className="border-b border-gray-200 p-4">
+            <div className="flex items-center space-x-2">
+              <img 
+                src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png" 
+                alt="SALUS" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <h2 className="text-lg font-semibold text-salus-blue">SALUS</h2>
+                <p className="text-xs text-gray-500">Panel Agente</p>
+              </div>
+            </div>
+          </SidebarHeader>
+          
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Ventas</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.id}>
+                      <SidebarMenuButton
+                        isActive={activeMenu === item.id}
+                        onClick={() => setActiveMenu(item.id)}
+                        className="w-full justify-start"
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                        {activeMenu === item.id && (
+                          <ChevronRight className="ml-auto h-4 w-4" />
+                        )}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          
+          <SidebarFooter className="border-t border-gray-200 p-4">
+            <div className="space-y-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-left"
+                onClick={() => setActiveMenu("reportes")}
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Reportes
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Cerrar Sesión
+              </Button>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
+
+        <SidebarInset className="flex-1">
+          <div className="flex flex-col h-full">
+            <header className="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200">
+              <div className="flex items-center space-x-4">
+                <SidebarTrigger />
+                <h1 className="text-xl font-semibold text-gray-900">
+                  {menuItems.find(item => item.id === activeMenu)?.label || "Dashboard"}
+                </h1>
+              </div>
+              
+              <PerfilUsuario 
+                usuario={{
+                  nombre: "Carlos",
+                  apellido: "Agente", 
+                  email: "agente@salus.com",
+                  rol: "Agente de Ventas",
+                  ultimoAcceso: "2024-01-15"
+                }}
+                onCerrarSesion={handleLogout}
+              />
+            </header>
+            
+            <main className="flex-1 overflow-auto">
+              {renderContent()}
+            </main>
           </div>
-        </aside>
-      )}
-
-      {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        <header className="bg-white shadow-md p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <h2 className="text-xl font-semibold text-salus-gray">Panel del Agente</h2>
-          <div className="text-sm text-salus-gray-light">Bienvenido, Agente de Seguros</div>
-        </header>
-
-        <section className="p-4 sm:p-6">
-          {view === "clientes" && <GestionClientes />}
-          {view === "seguros" && <ContratacionSeguros />}
-          {view === "reembolsos" && (
-            <p className="text-salus-gray">Aquí va la revisión de reembolsos.</p>
-          )}
-          {view === "reportes" && (
-            <p className="text-salus-gray">Aquí van los reportes disponibles.</p>
-          )}
-        </section>
-      </main>
-    </div>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 };
 

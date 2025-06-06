@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Inbox, Check, X } from "lucide-react";
+import { useSolicitudes } from "@/context/SolicitudesContext";
 
 const contactSchema = z.object({
   nombres: z.string().min(2, "Los nombres deben tener al menos 2 caracteres"),
@@ -38,7 +38,9 @@ type ContactForm = z.infer<typeof contactSchema>;
 
 const AsesorPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mostrarSolicitudes, setMostrarSolicitudes] = useState(false);
   const { toast } = useToast();
+  const { solicitudes, agregarSolicitud, eliminarSolicitud } = useSolicitudes();
 
   const form = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
@@ -58,6 +60,9 @@ const AsesorPage = () => {
     // Simular envío del formulario
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Agregar solicitud al contexto global
+    agregarSolicitud(data);
+    
     console.log("Datos del formulario:", data);
     
     toast({
@@ -67,6 +72,14 @@ const AsesorPage = () => {
     
     form.reset();
     setIsSubmitting(false);
+  };
+
+  const procesarSolicitud = (id: string) => {
+    eliminarSolicitud(id);
+    toast({
+      title: "Solicitud procesada",
+      description: "La solicitud ha sido marcada como procesada.",
+    });
   };
 
   return (
@@ -94,6 +107,66 @@ const AsesorPage = () => {
 
         <div className="py-16 bg-white">
           <div className="container mx-auto px-4">
+            {/* Botón de Solicitudes */}
+            <div className="mb-8 flex justify-center">
+              <Button
+                onClick={() => setMostrarSolicitudes(!mostrarSolicitudes)}
+                className="bg-salus-blue hover:bg-salus-blue-dark text-white flex items-center space-x-2"
+              >
+                <Inbox className="h-5 w-5" />
+                <span>Solicitudes ({solicitudes.length})</span>
+              </Button>
+            </div>
+
+            {/* Panel de Solicitudes */}
+            {mostrarSolicitudes && (
+              <div className="mb-8 bg-white rounded-2xl shadow-lg p-6 border">
+                <h3 className="text-xl font-bold mb-4 text-salus-gray">
+                  Solicitudes de Consulta
+                </h3>
+                
+                {solicitudes.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Inbox className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No hay solicitudes pendientes</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {solicitudes.map((solicitud) => (
+                      <div key={solicitud.id} className="border rounded-lg p-4 bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h4 className="font-semibold text-gray-900">
+                                {solicitud.nombres} {solicitud.apellidos}
+                              </h4>
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                {solicitud.fecha}
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <p><strong>Cédula:</strong> {solicitud.cedula}</p>
+                              <p><strong>Teléfono:</strong> {solicitud.telefono}</p>
+                              <p><strong>Email:</strong> {solicitud.email}</p>
+                              <p><strong>Mensaje:</strong> {solicitud.mensaje}</p>
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => procesarSolicitud(solicitud.id)}
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white ml-4"
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Procesar
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Formulario de contacto */}
               <div className="bg-white rounded-2xl shadow-lg p-8">
