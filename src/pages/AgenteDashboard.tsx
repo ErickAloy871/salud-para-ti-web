@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Users,
   ClipboardList,
@@ -15,6 +14,17 @@ import ContratacionSeguros from "@/components/ContratacionSeguros";
 const AgenteDashboard = () => {
   const [view, setView] = useState("clientes");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    // Función para actualizar el estado según el tamaño de la ventana
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const navItem = (
     id: string,
@@ -55,7 +65,7 @@ const AgenteDashboard = () => {
       </div>
 
       {/* Sidebar */}
-      {(sidebarOpen || window.innerWidth >= 640) && (
+      {(sidebarOpen || isDesktop) && (
         <aside className="bg-salus-blue w-full sm:w-64 p-6 shadow-2xl flex flex-col justify-between text-white rounded-r-3xl transition-all duration-300">
           <div>
             <div className="hidden sm:flex items-center gap-2 mb-6">
@@ -72,6 +82,8 @@ const AgenteDashboard = () => {
               {navItem("seguros", <ClipboardList className="w-5 h-5" />, "Contratacion de seguros")}
               {navItem("reembolsos", <Stethoscope className="w-5 h-5" />, "Revisión de reembolsos")}
               {navItem("reportes", <BarChart2 className="w-5 h-5" />, "Reportes")}
+              {navItem("gestion-seguros", <ClipboardList className="w-5 h-5" />, "Gestión de seguros")}
+
             </nav>
           </div>
 
