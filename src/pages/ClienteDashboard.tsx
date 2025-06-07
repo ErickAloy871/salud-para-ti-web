@@ -1,17 +1,57 @@
+
 import { useState } from "react";
 import {
-  Users,
   ClipboardList,
   Stethoscope,
-  BarChart2,
+  CreditCard,
   LogOut,
   Menu,
-  X
+  X,
+  Heart,
+  Shield
 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import PerfilUsuario from "@/components/PerfilUsuario";
+import FormularioReembolso from "@/components/FormularioReembolso";
+import TablaPagos from "@/components/TablaPagos";
+
+interface Seguro {
+  id: string;
+  tipo: 'Vida' | 'Salud';
+  nombre: string;
+  fechaContrato: string;
+  estado: 'activo' | 'pendiente' | 'vencido';
+  cobertura: string;
+}
+
+const segurosMockData: Seguro[] = [
+  {
+    id: "SEG001",
+    tipo: 'Vida',
+    nombre: "Seguro de Vida Premium",
+    fechaContrato: "2024-01-10",
+    estado: 'activo',
+    cobertura: "$100,000"
+  },
+  {
+    id: "SEG002", 
+    tipo: 'Salud',
+    nombre: "Seguro de Salud Familiar",
+    fechaContrato: "2024-01-15",
+    estado: 'activo',
+    cobertura: "Cobertura completa"
+  }
+];
 
 const ClienteDashboard = () => {
   const [view, setView] = useState("seguros");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleCerrarSesion = () => {
+    console.log("Cerrando sesión...");
+    // Aquí iría la lógica de logout
+  };
 
   const navItem = (
     id: string,
@@ -67,16 +107,17 @@ const ClienteDashboard = () => {
             <nav className="flex flex-col gap-3 w-full">
               {navItem("seguros", <ClipboardList className="w-5 h-5" />, "Mis seguros")}
               {navItem("reembolsos", <Stethoscope className="w-5 h-5" />, "Solicitar reembolso")}
-              {navItem("pagos", <BarChart2 className="w-5 h-5" />, "Pagos y vencimientos")}
+              {navItem("pagos", <CreditCard className="w-5 h-5" />, "Pagos y vencimientos")}
             </nav>
           </div>
 
           <div className="mt-6 w-full flex justify-center">
             <button
+              onClick={handleCerrarSesion}
               className="w-full max-w-[200px] flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-100 text-salus-gray hover:bg-red-500 hover:text-white font-medium transition shadow-md hover:shadow-lg"
             >
               <LogOut className="w-5 h-5" />
-              <span>Cerrar sesion</span>
+              <span>Cerrar sesión</span>
             </button>
           </div>
         </aside>
@@ -86,18 +127,77 @@ const ClienteDashboard = () => {
       <main className="flex-1 overflow-auto">
         <header className="bg-white shadow-md p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <h2 className="text-xl font-semibold text-salus-gray">Panel del Cliente</h2>
-          <div className="text-sm text-salus-gray-light">Bienvenido, estimado cliente</div>
+          <PerfilUsuario
+            usuario={{
+              nombre: "Juan",
+              apellido: "Pérez",
+              email: "juan.perez@email.com",
+              rol: "Cliente",
+              ultimoAcceso: "2024-01-15"
+            }}
+            onCerrarSesion={handleCerrarSesion}
+          />
         </header>
 
         <section className="p-4 sm:p-6">
           {view === "seguros" && (
-            <p className="text-salus-gray">Aquí puedes ver tus seguros contratados.</p>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Mis Seguros Contratados</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {segurosMockData.map((seguro) => (
+                    <Card key={seguro.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center gap-2">
+                            {seguro.tipo === 'Vida' ? (
+                              <Heart className="h-5 w-5 text-red-500" />
+                            ) : (
+                              <Shield className="h-5 w-5 text-blue-500" />
+                            )}
+                            Seguro de {seguro.tipo}
+                          </CardTitle>
+                          <Badge 
+                            variant={seguro.estado === 'activo' ? 'default' : 'destructive'}
+                          >
+                            {seguro.estado}
+                          </Badge>
+                        </div>
+                        <CardDescription>{seguro.nombre}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">ID del Seguro:</span>
+                            <span className="font-medium">{seguro.id}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Fecha de Contrato:</span>
+                            <span className="font-medium">{seguro.fechaContrato}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Cobertura:</span>
+                            <span className="font-medium">{seguro.cobertura}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
+          
           {view === "reembolsos" && (
-            <p className="text-salus-gray">Aquí puedes solicitar reembolsos.</p>
+            <div className="max-w-2xl mx-auto">
+              <FormularioReembolso />
+            </div>
           )}
+          
           {view === "pagos" && (
-            <p className="text-salus-gray">Aquí puedes ver el estado de tus pagos.</p>
+            <div>
+              <TablaPagos />
+            </div>
           )}
         </section>
       </main>

@@ -1,49 +1,35 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Phone, Mail, MapPin, Clock, Inbox, Check, X } from "lucide-react";
 import { useSolicitudes } from "@/context/SolicitudesContext";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-const contactSchema = z.object({
+const formSchema = z.object({
   nombres: z.string().min(2, "Los nombres deben tener al menos 2 caracteres"),
   apellidos: z.string().min(2, "Los apellidos deben tener al menos 2 caracteres"),
-  cedula: z.string()
-    .min(8, "La cédula debe tener al menos 8 dígitos")
-    .max(10, "La cédula no puede tener más de 10 dígitos")
-    .regex(/^\d+$/, "La cédula solo debe contener números"),
-  telefono: z.string()
-    .min(10, "El teléfono debe tener 10 dígitos")
-    .max(10, "El teléfono debe tener 10 dígitos")
-    .regex(/^3\d{9}$/, "El teléfono debe empezar con 3 y tener 10 dígitos"),
-  email: z.string().email("Email inválido"),
+  cedula: z.string().min(8, "La cédula debe tener al menos 8 caracteres"),
+  telefono: z.string().min(10, "El teléfono debe tener al menos 10 caracteres"),
+  email: z.string().email("Ingrese un email válido"),
   mensaje: z.string().min(10, "El mensaje debe tener al menos 10 caracteres"),
 });
 
-type ContactForm = z.infer<typeof contactSchema>;
-
-const AsesorPage = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mostrarSolicitudes, setMostrarSolicitudes] = useState(false);
+const Asesores = () => {
   const { toast } = useToast();
   const { solicitudes, agregarSolicitud, eliminarSolicitud } = useSolicitudes();
+  const [showTable, setShowTable] = useState(false);
 
-  const form = useForm<ContactForm>({
-    resolver: zodResolver(contactSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       nombres: "",
       apellidos: "",
@@ -54,187 +40,94 @@ const AsesorPage = () => {
     },
   });
 
-  const onSubmit = async (data: ContactForm) => {
-    setIsSubmitting(true);
-    
-    // Simular envío del formulario
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Agregar solicitud al contexto global
-    agregarSolicitud(data);
-    
-    console.log("Datos del formulario:", data);
-    
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    agregarSolicitud(values);
     toast({
       title: "Solicitud enviada",
-      description: "Un asesor se comunicará contigo pronto.",
+      description: "Su solicitud ha sido registrada exitosamente.",
     });
-    
     form.reset();
-    setIsSubmitting(false);
-  };
-
-  const procesarSolicitud = (id: string) => {
-    eliminarSolicitud(id);
-    toast({
-      title: "Solicitud procesada",
-      description: "La solicitud ha sido marcada como procesada.",
-    });
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="flex-grow">
-        <div className="pt-32 pb-16 bg-gradient-to-br from-blue-50 to-white">
-          <div className="container mx-auto px-4 text-center">
-            <div className="flex justify-center items-center space-x-2 mb-4">
-              <img 
-                src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png" 
-                alt="SALUS" 
-                className="h-12 w-auto"
-              />
-              <span className="text-salus-blue font-semibold text-lg">SALUS ASEGURADORA</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-salus-gray">
-              Habla con Nuestros Asesores
-            </h1>
-            <p className="text-salus-gray-light text-lg md:text-xl max-w-2xl mx-auto">
-              Nuestros expertos están listos para ayudarte a encontrar el plan perfecto para ti
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-primary mb-4">Nuestros Asesores</h1>
+            <p className="text-lg text-muted-foreground">
+              Contáctanos para obtener asesoría personalizada sobre nuestros seguros
             </p>
           </div>
-        </div>
 
-        <div className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            {/* Botón de Solicitudes */}
-            <div className="mb-8 flex justify-center">
-              <Button
-                onClick={() => setMostrarSolicitudes(!mostrarSolicitudes)}
-                className="bg-salus-blue hover:bg-salus-blue-dark text-white flex items-center space-x-2"
-              >
-                <Inbox className="h-5 w-5" />
-                <span>Solicitudes ({solicitudes.length})</span>
-              </Button>
-            </div>
-
-            {/* Panel de Solicitudes */}
-            {mostrarSolicitudes && (
-              <div className="mb-8 bg-white rounded-2xl shadow-lg p-6 border">
-                <h3 className="text-xl font-bold mb-4 text-salus-gray">
-                  Solicitudes de Consulta
-                </h3>
-                
-                {solicitudes.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Inbox className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No hay solicitudes pendientes</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {solicitudes.map((solicitud) => (
-                      <div key={solicitud.id} className="border rounded-lg p-4 bg-gray-50">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <h4 className="font-semibold text-gray-900">
-                                {solicitud.nombres} {solicitud.apellidos}
-                              </h4>
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                {solicitud.fecha}
-                              </span>
-                            </div>
-                            <div className="text-sm text-gray-600 space-y-1">
-                              <p><strong>Cédula:</strong> {solicitud.cedula}</p>
-                              <p><strong>Teléfono:</strong> {solicitud.telefono}</p>
-                              <p><strong>Email:</strong> {solicitud.email}</p>
-                              <p><strong>Mensaje:</strong> {solicitud.mensaje}</p>
-                            </div>
-                          </div>
-                          <Button
-                            onClick={() => procesarSolicitud(solicitud.id)}
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white ml-4"
-                          >
-                            <Check className="h-4 w-4 mr-1" />
-                            Procesar
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Formulario de contacto */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold mb-6 text-salus-gray">
-                  Solicita una Consulta Gratuita
-                </h2>
-                
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Solicitar Asesoría</CardTitle>
+                <CardDescription>
+                  Complete el formulario y nos pondremos en contacto con usted
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="nombres"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nombres</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Ingresa tus nombres" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="apellidos"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Apellidos</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Ingresa tus apellidos" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="nombres"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombres</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ingrese sus nombres" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="cedula"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Cédula</FormLabel>
-                            <FormControl>
-                              <Input placeholder="12345678" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="telefono"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Teléfono</FormLabel>
-                            <FormControl>
-                              <Input placeholder="3123456789" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="apellidos"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apellidos</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ingrese sus apellidos" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="cedula"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cédula</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ingrese su cédula" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="telefono"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ingrese su teléfono" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <FormField
                       control={form.control}
@@ -243,7 +136,7 @@ const AsesorPage = () => {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="tu@email.com" type="email" {...field} />
+                            <Input type="email" placeholder="Ingrese su email" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -258,9 +151,8 @@ const AsesorPage = () => {
                           <FormLabel>Mensaje</FormLabel>
                           <FormControl>
                             <Textarea 
-                              placeholder="Cuéntanos qué tipo de seguro te interesa o cualquier pregunta que tengas..."
-                              className="min-h-[120px]"
-                              {...field}
+                              placeholder="Describa el tipo de asesoría que necesita" 
+                              {...field} 
                             />
                           </FormControl>
                           <FormMessage />
@@ -268,60 +160,70 @@ const AsesorPage = () => {
                       )}
                     />
 
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-salus-blue hover:bg-salus-blue-dark text-white py-6"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Enviando..." : "Solicitar Consulta"}
+                    <Button type="submit" className="w-full">
+                      Enviar Solicitud
                     </Button>
                   </form>
                 </Form>
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* Información de contacto */}
-              <div className="space-y-8">
-                <div className="bg-salus-blue text-white rounded-2xl p-8">
-                  <h3 className="text-2xl font-bold mb-6">Información de Contacto</h3>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <Phone className="h-5 w-5" />
-                      <span>+57 (1) 234-5678</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Mail className="h-5 w-5" />
-                      <span>info@salusaseguradora.com</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="h-5 w-5" />
-                      <span>Carrera 7 #123-45, Bogotá, Colombia</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Clock className="h-5 w-5" />
-                      <span>Lunes a Viernes: 8:00 AM - 6:00 PM</span>
-                    </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestión de Solicitudes</CardTitle>
+                <CardDescription>
+                  Ver y administrar las solicitudes recibidas
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={() => setShowTable(!showTable)}
+                  className="mb-4"
+                >
+                  {showTable ? 'Ocultar' : 'Ver'} Solicitudes ({solicitudes.length})
+                </Button>
+
+                {showTable && (
+                  <div className="max-h-96 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {solicitudes.map((solicitud) => (
+                          <TableRow key={solicitud.id}>
+                            <TableCell>{solicitud.fecha}</TableCell>
+                            <TableCell>{solicitud.nombres} {solicitud.apellidos}</TableCell>
+                            <TableCell>{solicitud.email}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => eliminarSolicitud(solicitud.id)}
+                              >
+                                Eliminar
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <h3 className="text-xl font-bold mb-4 text-salus-gray">¿Qué puedes esperar?</h3>
-                  <ul className="space-y-3 text-salus-gray-light">
-                    <li>• Consulta gratuita sin compromiso</li>
-                    <li>• Asesoría personalizada para tus necesidades</li>
-                    <li>• Comparación de planes disponibles</li>
-                    <li>• Respuesta en menos de 24 horas</li>
-                    <li>• Atención de expertos en seguros</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </main>
+      </div>
+
       <Footer />
     </div>
   );
 };
 
-export default AsesorPage;
+export default Asesores;
