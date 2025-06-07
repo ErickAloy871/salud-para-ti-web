@@ -20,24 +20,20 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import PerfilUsuario from "@/components/PerfilUsuario";
-import GestionSeguros from "@/components/GestionSeguros";
 import GestionClientes from "@/components/GestionClientes";
 import GestionRoles from "@/components/GestionRoles";
 import ContratacionSeguros from "@/components/ContratacionSeguros";
 import { 
-  Shield, 
   Users, 
   UserCheck, 
   FileText, 
   BarChart3, 
-  Settings,
   LogOut,
   ChevronRight
 } from "lucide-react";
 
 type MenuOption = 
   | "dashboard" 
-  | "seguros" 
   | "clientes" 
   | "roles" 
   | "contratacion" 
@@ -64,17 +60,14 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { id: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
-    { id: "seguros" as const, label: "Gestión de Seguros", icon: Shield },
     { id: "clientes" as const, label: "Gestión de Clientes", icon: Users },
     { id: "roles" as const, label: "Gestión de Roles", icon: UserCheck },
-    { id: "contratacion" as const, label: "Contratación", icon: FileText },
+    { id: "contratacion" as const, label: "Solicitudes de Contacto", icon: FileText },
     { id: "reportes" as const, label: "Reportes", icon: BarChart3 },
   ];
 
   const renderContent = () => {
     switch (activeMenu) {
-      case "seguros":
-        return <GestionSeguros />;
       case "clientes":
         return <GestionClientes />;
       case "roles":
@@ -97,18 +90,7 @@ const AdminDashboard = () => {
               <h1 className="text-3xl font-bold text-salus-gray">Dashboard Administrativo</h1>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Seguros</CardTitle>
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">24</div>
-                  <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p>
-                </CardContent>
-              </Card>
-              
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Clientes Activos</CardTitle>
@@ -158,12 +140,12 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Badge variant="outline">Actualizado</Badge>
-                      <span className="text-sm">Seguro de Vida modificado</span>
+                      <span className="text-sm">Contrato #123 actualizado</span>
                       <span className="text-xs text-muted-foreground ml-auto">Hace 4h</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Badge variant="destructive">Cancelado</Badge>
-                      <span className="text-sm">Contrato #123 cancelado</span>
+                      <span className="text-sm">Contrato #456 cancelado</span>
                       <span className="text-xs text-muted-foreground ml-auto">Hace 6h</span>
                     </div>
                   </div>
@@ -180,14 +162,6 @@ const AdminDashboard = () => {
                     <Button 
                       variant="outline" 
                       className="justify-start"
-                      onClick={() => setActiveMenu("seguros")}
-                    >
-                      <Shield className="mr-2 h-4 w-4" />
-                      Seguros
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="justify-start"
                       onClick={() => setActiveMenu("clientes")}
                     >
                       <Users className="mr-2 h-4 w-4" />
@@ -199,7 +173,15 @@ const AdminDashboard = () => {
                       onClick={() => setActiveMenu("contratacion")}
                     >
                       <FileText className="mr-2 h-4 w-4" />
-                      Contratos
+                      Solicitudes
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="justify-start"
+                      onClick={() => setActiveMenu("roles")}
+                    >
+                      <UserCheck className="mr-2 h-4 w-4" />
+                      Roles
                     </Button>
                     <Button 
                       variant="outline" 
@@ -222,7 +204,7 @@ const AdminDashboard = () => {
     <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
       <div className="flex h-screen w-full bg-gray-50">
         <Sidebar>
-          <SidebarHeader className="border-b border-gray-200 p-4">
+          <SidebarHeader className="border-b border-gray-200 p-2">
             <div className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png" 

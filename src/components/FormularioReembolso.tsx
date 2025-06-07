@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,9 +18,17 @@ import { useToast } from "@/hooks/use-toast";
 const formSchema = z.object({
   fechaGasto: z.date({
     required_error: "La fecha del gasto es requerida",
+  }).refine((date) => date <= new Date(), {
+    message: "La fecha no puede ser futura",
   }),
   tipoGasto: z.string().min(1, "Seleccione el tipo de gasto"),
-  monto: z.string().min(1, "El monto es requerido"),
+  monto: z.string()
+    .min(1, "El monto es requerido")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return num === 69 || num === 120;
+    }, "El monto debe ser 69 o 120 USD")
+    .refine((val) => parseFloat(val) >= 0, "El monto no puede ser negativo"),
   comprobante: z.any().optional(),
   descripcion: z.string().optional(),
 });
@@ -148,14 +155,17 @@ const FormularioReembolso = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Monto Solicitado (USD)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="0.00" 
-                      step="0.01"
-                      {...field} 
-                    />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione el monto" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="69">$69.00</SelectItem>
+                      <SelectItem value="120">$120.00</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

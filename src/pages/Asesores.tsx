@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useSolicitudes } from "@/context/SolicitudesContext";
 import Navbar from "@/components/Navbar";
@@ -18,15 +16,16 @@ const formSchema = z.object({
   nombres: z.string().min(2, "Los nombres deben tener al menos 2 caracteres"),
   apellidos: z.string().min(2, "Los apellidos deben tener al menos 2 caracteres"),
   cedula: z.string().min(8, "La cédula debe tener al menos 8 caracteres"),
-  telefono: z.string().min(10, "El teléfono debe tener al menos 10 caracteres"),
+  telefono: z.string()
+    .regex(/^09\d{8}$/, "El teléfono debe iniciar con 09 y tener 10 dígitos")
+    .refine((val) => !/[a-zA-Z]/.test(val), "El teléfono no puede contener letras"),
   email: z.string().email("Ingrese un email válido"),
   mensaje: z.string().min(10, "El mensaje debe tener al menos 10 caracteres"),
 });
 
 const Asesores = () => {
   const { toast } = useToast();
-  const { solicitudes, agregarSolicitud, eliminarSolicitud } = useSolicitudes();
-  const [showTable, setShowTable] = useState(false);
+  const { agregarSolicitud } = useSolicitudes();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,7 +53,7 @@ const Asesores = () => {
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-primary mb-4">Nuestros Asesores</h1>
             <p className="text-lg text-muted-foreground">
@@ -62,162 +61,114 @@ const Asesores = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Solicitar Asesoría</CardTitle>
-                <CardDescription>
-                  Complete el formulario y nos pondremos en contacto con usted
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="nombres"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombres</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ingrese sus nombres" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          <Card>
+            <CardHeader>
+              <CardTitle>Solicitar Asesoría</CardTitle>
+              <CardDescription>
+                Complete el formulario y nos pondremos en contacto con usted
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="nombres"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nombres</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ingrese sus nombres" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="apellidos"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Apellidos</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ingrese sus apellidos" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="apellidos"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Apellidos</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ingrese sus apellidos" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="cedula"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cédula</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ingrese su cédula" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="cedula"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cédula</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ingrese su cédula" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="telefono"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Teléfono</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ingrese su teléfono" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="telefono"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Teléfono</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ej: 0987654321" 
+                            {...field} 
+                            maxLength={10}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="Ingrese su email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="Ingrese su email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="mensaje"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mensaje</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describa el tipo de asesoría que necesita" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="mensaje"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mensaje</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describa el tipo de asesoría que necesita" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <Button type="submit" className="w-full">
-                      Enviar Solicitud
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestión de Solicitudes</CardTitle>
-                <CardDescription>
-                  Ver y administrar las solicitudes recibidas
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  onClick={() => setShowTable(!showTable)}
-                  className="mb-4"
-                >
-                  {showTable ? 'Ocultar' : 'Ver'} Solicitudes ({solicitudes.length})
-                </Button>
-
-                {showTable && (
-                  <div className="max-h-96 overflow-y-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Fecha</TableHead>
-                          <TableHead>Nombre</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {solicitudes.map((solicitud) => (
-                          <TableRow key={solicitud.id}>
-                            <TableCell>{solicitud.fecha}</TableCell>
-                            <TableCell>{solicitud.nombres} {solicitud.apellidos}</TableCell>
-                            <TableCell>{solicitud.email}</TableCell>
-                            <TableCell>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => eliminarSolicitud(solicitud.id)}
-                              >
-                                Eliminar
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  <Button type="submit" className="w-full">
+                    Enviar Solicitud
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
         </div>
       </div>
 

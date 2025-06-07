@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -209,7 +210,7 @@ const AgenteDashboard = () => {
     <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
       <div className="flex h-screen w-full bg-gray-50">
         <Sidebar>
-          <SidebarHeader className="border-b border-gray-200 p-4">
+          <SidebarHeader className="border-b border-gray-200 p-2">
             <div className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/84d5c2fc-1a5b-4438-b68e-c9b2f0c8c75b.png" 
