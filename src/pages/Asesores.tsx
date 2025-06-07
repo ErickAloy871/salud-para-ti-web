@@ -40,7 +40,16 @@ const Asesores = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    agregarSolicitud(values);
+    const solicitudData = {
+      nombres: values.nombres,
+      apellidos: values.apellidos,
+      cedula: values.cedula,
+      telefono: values.telefono,
+      email: values.email,
+      mensaje: values.mensaje,
+    };
+    
+    agregarSolicitud(solicitudData);
     toast({
       title: "Solicitud enviada",
       description: "Su solicitud ha sido registrada exitosamente.",

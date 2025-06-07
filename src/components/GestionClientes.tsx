@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Users, Plus, Pencil, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -254,7 +253,7 @@ const GestionClientes = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Users className="w-6 h-6 text-salus-blue" />
-          <h3 className="text-2xl font-bold text-salus-gray">Gestión de Clientes</h3>
+          <h3 className="text-2xl font-bold text-salus-gray">Clientes</h3>
         </div>
         
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

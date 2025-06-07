@@ -4,7 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { FileText } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FileText, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Pago {
   id: string;
@@ -44,10 +48,70 @@ const pagosMockData: Pago[] = [
 
 const TablaPagos = () => {
   const [pagos] = useState<Pago[]>(pagosMockData);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    monto: '',
+    fechaPago: '',
+    comprobante: null as File | null
+  });
+  const { toast } = useToast();
 
-  const handlePagar = () => {
-    console.log("Redirigiendo a formulario de pago...");
-    // Aquí iría la lógica para abrir el formulario de pago
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData(prev => ({ ...prev, comprobante: file }));
+  };
+
+  const handleSubmitPayment = () => {
+    if (!formData.monto || !formData.fechaPago || !formData.comprobante) {
+      toast({
+        title: "Error",
+        description: "Todos los campos son obligatorios",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar monto
+    const monto = parseFloat(formData.monto);
+    if (monto !== 69 && monto !== 120) {
+      toast({
+        title: "Error",
+        description: "El monto debe ser $69 o $120 según el tipo de seguro",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar fecha no sea futura
+    const fechaSeleccionada = new Date(formData.fechaPago);
+    const fechaActual = new Date();
+    fechaActual.setHours(23, 59, 59, 999);
+
+    if (fechaSeleccionada > fechaActual) {
+      toast({
+        title: "Error",
+        description: "No se puede seleccionar una fecha futura",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Pago procesado",
+      description: "Su pago ha sido registrado exitosamente.",
+    });
+
+    setFormData({
+      monto: '',
+      fechaPago: '',
+      comprobante: null
+    });
+    setIsPaymentDialogOpen(false);
   };
 
   return (
@@ -57,9 +121,72 @@ const TablaPagos = () => {
           <h2 className="text-2xl font-bold text-gray-900">Pagos Realizados</h2>
           <p className="text-gray-600">Historial de pagos completados</p>
         </div>
-        <Button onClick={handlePagar} className="bg-salus-blue hover:bg-salus-blue/90">
-          Pagar
-        </Button>
+        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-salus-blue hover:bg-salus-blue/90">
+              Pagar
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Realizar Pago</DialogTitle>
+              <DialogDescription>
+                Complete la información para procesar su pago
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="monto">Monto a Pagar (USD)</Label>
+                <Input
+                  id="monto"
+                  name="monto"
+                  type="number"
+                  placeholder="69 o 120"
+                  value={formData.monto}
+                  onChange={handleInputChange}
+                  min="0"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  $69 para Seguro de Salud, $120 para Seguro de Vida
+                </p>
+              </div>
+              
+              <div>
+                <Label htmlFor="fechaPago">Fecha de Pago</Label>
+                <Input
+                  id="fechaPago"
+                  name="fechaPago"
+                  type="date"
+                  value={formData.fechaPago}
+                  onChange={handleInputChange}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="comprobante">Comprobante</Label>
+                <Input
+                  id="comprobante"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Formatos aceptados: PDF, JPG, PNG
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSubmitPayment} className="bg-salus-blue hover:bg-salus-blue/90">
+                Procesar Pago
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
