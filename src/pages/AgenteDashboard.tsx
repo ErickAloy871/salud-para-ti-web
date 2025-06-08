@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,9 @@ import {
 import PerfilUsuario from "@/components/PerfilUsuario";
 import ContratacionSeguros from "@/components/ContratacionSeguros";
 import SolicitudesContacto from "@/components/SolicitudesContacto";
+import GestionReembolsos from "@/components/GestionReembolsos";
+import HistorialPagos from "@/components/HistorialPagos";
+import GestionClientes from "@/components/GestionClientes";
 import { 
   Shield, 
   Users, 
@@ -29,10 +31,12 @@ import {
   TrendingUp,
   LogOut,
   ChevronRight,
-  MessageCircle
+  MessageCircle,
+  DollarSign,
+  CreditCard
 } from "lucide-react";
 
-type MenuOption = "dashboard" | "clientes" | "contratacion" | "solicitudes-contacto" | "reportes";
+type MenuOption = "dashboard" | "clientes" | "contratacion" | "solicitudes-contacto" | "reembolsos" | "pagos" | "reportes";
 
 const AgenteDashboard = () => {
   const [activeMenu, setActiveMenu] = useState<MenuOption>("dashboard");
@@ -55,9 +59,11 @@ const AgenteDashboard = () => {
 
   const menuItems = [
     { id: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
-    { id: "clientes" as const, label: "Mis Clientes", icon: Users },
+    { id: "clientes" as const, label: "Clientes", icon: Users },
     { id: "contratacion" as const, label: "Nueva Venta", icon: FileText },
     { id: "solicitudes-contacto" as const, label: "Solicitudes de Contacto", icon: MessageCircle },
+    { id: "reembolsos" as const, label: "Reembolsos", icon: DollarSign },
+    { id: "pagos" as const, label: "Historial Pagos", icon: CreditCard },
     { id: "reportes" as const, label: "Reportes", icon: TrendingUp },
   ];
 
@@ -66,10 +72,7 @@ const AgenteDashboard = () => {
       case "clientes":
         return (
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4 text-salus-blue">Mis Clientes</h2>
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <p className="text-gray-600">Lista de clientes asignados al agente...</p>
-            </div>
+            <GestionClientes />
           </div>
         );
       case "contratacion":
@@ -78,6 +81,18 @@ const AgenteDashboard = () => {
         return (
           <div className="p-6">
             <SolicitudesContacto />
+          </div>
+        );
+      case "reembolsos":
+        return (
+          <div className="p-6">
+            <GestionReembolsos />
+          </div>
+        );
+      case "pagos":
+        return (
+          <div className="p-6">
+            <HistorialPagos />
           </div>
         );
       case "reportes":

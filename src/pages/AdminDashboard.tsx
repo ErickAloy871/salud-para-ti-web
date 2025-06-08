@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,14 +19,23 @@ import {
 import PerfilUsuario from "@/components/PerfilUsuario";
 import GestionClientes from "@/components/GestionClientes";
 import GestionRoles from "@/components/GestionRoles";
-import { 
+import CrearUsuario from "@/components/CrearUsuario";
+import GestionReembolsos from "@/components/GestionReembolsos";
+import HistorialPagos from "@/components/HistorialPagos";
+import ReportesAdmin from "@/components/ReportesAdmin";
+import SolicitudesContacto from "@/components/SolicitudesContacto";
+import {
   Users,
   Shield,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  FileText,
+  CreditCard,
+  MessageCircle,
+  BarChart3
 } from "lucide-react";
 
-type MenuOption = "clientes" | "roles";
+type MenuOption = "clientes" | "roles" | "crear-usuario" | "reembolsos" | "pagos" | "solicitudes" | "reportes";
 
 const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState<MenuOption>("clientes");
@@ -51,6 +59,11 @@ const AdminDashboard = () => {
   const menuItems = [
     { id: "clientes" as const, label: "Clientes", icon: Users },
     { id: "roles" as const, label: "Gestión de Roles", icon: Shield },
+    { id: "crear-usuario" as const, label: "Crear Usuario", icon: Users },
+    { id: "reembolsos" as const, label: "Reembolsos", icon: FileText },
+    { id: "pagos" as const, label: "Historial Pagos", icon: CreditCard },
+    { id: "solicitudes" as const, label: "Solicitudes Contacto", icon: MessageCircle },
+    { id: "reportes" as const, label: "Reportes", icon: BarChart3 },
   ];
 
   const renderContent = () => {
@@ -59,6 +72,38 @@ const AdminDashboard = () => {
         return (
           <div className="p-6">
             <GestionRoles />
+          </div>
+        );
+      case "crear-usuario":
+        return (
+          <div className="p-6">
+            <div className="flex justify-center">
+              <CrearUsuario />
+            </div>
+          </div>
+        );
+      case "reembolsos":
+        return (
+          <div className="p-6">
+            <GestionReembolsos />
+          </div>
+        );
+      case "pagos":
+        return (
+          <div className="p-6">
+            <HistorialPagos />
+          </div>
+        );
+      case "solicitudes":
+        return (
+          <div className="p-6">
+            <SolicitudesContacto />
+          </div>
+        );
+      case "reportes":
+        return (
+          <div className="p-6">
+            <ReportesAdmin />
           </div>
         );
       default:
