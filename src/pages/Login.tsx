@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -8,7 +9,10 @@ import { Shield, Eye, EyeOff } from "lucide-react";
 
 // ✅ Tipo personalizado para la respuesta del backend
 type LoginResponse = {
-  tipo: string;
+  usuario: {
+    tipo: number;
+  };
+  token: string;
   mensaje: string;
 };
 
@@ -35,7 +39,7 @@ const LoginPage = () => {
 
     try {
       // Cambia los nombres de los campos para coincidir con el backend
-      const response = await axios.post("http://localhost:8000/login", {
+      const response = await axios.post<LoginResponse>("http://localhost:8000/login", {
         correo: formData.email,
         password: formData.password,
       });

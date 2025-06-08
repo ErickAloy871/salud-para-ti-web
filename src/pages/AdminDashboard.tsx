@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,16 +20,14 @@ import {
 import PerfilUsuario from "@/components/PerfilUsuario";
 import GestionClientes from "@/components/GestionClientes";
 import GestionRoles from "@/components/GestionRoles";
-import SolicitudesContacto from "@/components/SolicitudesContacto";
 import { 
   Users,
   Shield,
   LogOut,
-  ChevronRight,
-  MessageCircle
+  ChevronRight
 } from "lucide-react";
 
-type MenuOption = "clientes" | "solicitudes-contacto" | "roles";
+type MenuOption = "clientes" | "roles";
 
 const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState<MenuOption>("clientes");
@@ -51,18 +50,11 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { id: "clientes" as const, label: "Clientes", icon: Users },
-    { id: "solicitudes-contacto" as const, label: "Solicitudes de Contacto", icon: MessageCircle },
     { id: "roles" as const, label: "Gestión de Roles", icon: Shield },
   ];
 
   const renderContent = () => {
     switch (activeMenu) {
-      case "solicitudes-contacto":
-        return (
-          <div className="p-6">
-            <SolicitudesContacto />
-          </div>
-        );
       case "roles":
         return (
           <div className="p-6">

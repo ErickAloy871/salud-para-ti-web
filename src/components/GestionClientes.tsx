@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { Users, Plus, Pencil, Trash2, UserPlus } from "lucide-react";
+import { Users, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,7 +74,6 @@ const clientesData = [
 
 const GestionClientes = () => {
   const [clientes, setClientes] = useState(clientesData);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<any>(null);
   const [formData, setFormData] = useState({
     nombre: "",
@@ -96,27 +96,6 @@ const GestionClientes = () => {
         valorMensual: value === 'Vida' ? 420 : 69
       })
     }));
-  };
-
-  const handleCreateCliente = () => {
-    const newCliente = {
-      id: clientes.length + 1,
-      ...formData,
-      estado: "Activo",
-      fechaRegistro: new Date().toISOString().split('T')[0]
-    };
-    setClientes([...clientes, newCliente]);
-    setFormData({
-      nombre: "",
-      email: "",
-      telefono: "",
-      cedula: "",
-      fechaNacimiento: "",
-      direccion: "",
-      seguro: "Salud",
-      valorMensual: 69
-    });
-    setIsCreateDialogOpen(false);
   };
 
   const handleEditCliente = (cliente: any) => {
@@ -255,32 +234,6 @@ const GestionClientes = () => {
           <Users className="w-6 h-6 text-salus-blue" />
           <h3 className="text-2xl font-bold text-salus-gray">Clientes</h3>
         </div>
-        
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-salus-blue hover:bg-salus-blue-dark">
-              <UserPlus className="w-4 h-4 mr-2" />
-              Nuevo Cliente
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Crear Nuevo Cliente</DialogTitle>
-              <DialogDescription>
-                Complete la información del nuevo cliente para crear su perfil.
-              </DialogDescription>
-            </DialogHeader>
-            <ClienteForm />
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleCreateCliente} className="bg-salus-blue hover:bg-salus-blue-dark">
-                Crear Cliente
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
 
       {/* Estadísticas */}

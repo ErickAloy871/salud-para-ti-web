@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import PerfilUsuario from "@/components/PerfilUsuario";
 import ContratacionSeguros from "@/components/ContratacionSeguros";
+import SolicitudesContacto from "@/components/SolicitudesContacto";
 import { 
   Shield, 
   Users, 
@@ -27,10 +28,11 @@ import {
   BarChart3, 
   TrendingUp,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  MessageCircle
 } from "lucide-react";
 
-type MenuOption = "dashboard" | "clientes" | "contratacion" | "reportes";
+type MenuOption = "dashboard" | "clientes" | "contratacion" | "solicitudes-contacto" | "reportes";
 
 const AgenteDashboard = () => {
   const [activeMenu, setActiveMenu] = useState<MenuOption>("dashboard");
@@ -55,6 +57,7 @@ const AgenteDashboard = () => {
     { id: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
     { id: "clientes" as const, label: "Mis Clientes", icon: Users },
     { id: "contratacion" as const, label: "Nueva Venta", icon: FileText },
+    { id: "solicitudes-contacto" as const, label: "Solicitudes de Contacto", icon: MessageCircle },
     { id: "reportes" as const, label: "Reportes", icon: TrendingUp },
   ];
 
@@ -71,6 +74,12 @@ const AgenteDashboard = () => {
         );
       case "contratacion":
         return <ContratacionSeguros />;
+      case "solicitudes-contacto":
+        return (
+          <div className="p-6">
+            <SolicitudesContacto />
+          </div>
+        );
       case "reportes":
         return (
           <div className="p-6">
