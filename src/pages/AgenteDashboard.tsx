@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
 import {
   Sidebar,
   SidebarContent,
@@ -36,21 +42,48 @@ import {
   CreditCard
 } from "lucide-react";
 
-type MenuOption = "dashboard" | "clientes" | "contratacion" | "solicitudes-contacto" | "reembolsos" | "pagos" | "reportes";
+type MenuOption = 
+  | "dashboard" 
+  | "clientes" 
+  | "contratacion" 
+  | "solicitudes-contacto" 
+  | "reembolsos" 
+  | "pagos" 
+  | "reportes";
 
 const AgenteDashboard = () => {
   const [activeMenu, setActiveMenu] = useState<MenuOption>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
+  // Estado para mostrar la cantidad real de clientes y las últimas 3 “ventas”.
+  const [cantidadClientes, setCantidadClientes] = useState(0);
+  const [ventasRecientes, setVentasRecientes] = useState<any[]>([]);
+
   useEffect(() => {
+    // Ajusta el sidebar según el tamaño de pantalla
     const handleResize = () => {
       setIsSidebarOpen(window.innerWidth >= 768);
     };
-
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    // Leer la lista de clientes de localStorage
+    const stored = localStorage.getItem("clientes");
+    if (stored) {
+      const listaClientes = JSON.parse(stored);
+
+      // Guardamos la cantidad total de clientes
+      setCantidadClientes(listaClientes.length);
+
+      // Ordenamos los clientes por ID (desc) y tomamos los 3 primeros como "ventas recientes"
+      const ventasOrdenadas = listaClientes.sort((a: any, b: any) => b.id - a.id);
+      setVentasRecientes(ventasOrdenadas.slice(0, 3));
+    }
   }, []);
 
   const handleLogout = () => {
@@ -105,10 +138,13 @@ const AgenteDashboard = () => {
           </div>
         );
       default:
+        // Dashboard
         return (
           <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold text-salus-gray">Dashboard del Agente</h1>
+              <h1 className="text-3xl font-bold text-salus-gray">
+                Dashboard del Agente
+              </h1>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -122,15 +158,16 @@ const AgenteDashboard = () => {
                   <p className="text-xs text-muted-foreground">+20% vs mes anterior</p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Mis Clientes</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">45</div>
-                  <p className="text-xs text-muted-foreground">+3 nuevos este mes</p>
+                  {/* Mostrar la cantidad real de clientes */}
+                  <div className="text-2xl font-bold">{cantidadClientes}</div>
+                  <p className="text-xs text-muted-foreground">Cantidad total de clientes</p>
                 </CardContent>
               </Card>
               
@@ -165,27 +202,23 @@ const AgenteDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">Juan Pérez - Seguro de Vida</p>
-                        <p className="text-sm text-gray-500">$420/mes</p>
-                      </div>
-                      <span className="text-xs text-gray-400">Hoy</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">María García - Seguro de Salud</p>
-                        <p className="text-sm text-gray-500">$69/mes</p>
-                      </div>
-                      <span className="text-xs text-gray-400">Ayer</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">Carlos López - Seguro de Vida</p>
-                        <p className="text-sm text-gray-500">$420/mes</p>
-                      </div>
-                      <span className="text-xs text-gray-400">Hace 2 días</span>
-                    </div>
+                    {ventasRecientes.length === 0 ? (
+                      <p className="text-sm text-gray-500">Aún no hay ventas...</p>
+                    ) : (
+                      ventasRecientes.map((venta: any) => (
+                        <div key={venta.id} className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium">
+                              {venta.nombre} - Seguro de {venta.seguro}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              ${venta.valorMensual}/mes
+                            </p>
+                          </div>
+                          <span className="text-xs text-gray-400">Reciente</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>

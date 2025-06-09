@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Users, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,9 +31,9 @@ import {
 // Datos de ejemplo
 const clientesData = [
   { 
-    id: 1, 
+    id: 12345678, 
     nombre: "Ana Rodríguez", 
-    email: "ana.rodriguez@email.com", 
+    email: "ana.rodriguez@email.com",
     telefono: "+57 300 123 4567",
     cedula: "12345678",
     fechaNacimiento: "1985-03-15",
@@ -45,9 +44,9 @@ const clientesData = [
     valorMensual: 69
   },
   { 
-    id: 2, 
+    id: 87654321, 
     nombre: "Pedro Martínez", 
-    email: "pedro.martinez@email.com", 
+    email: "pedro.martinez@email.com",
     telefono: "+57 310 987 6543",
     cedula: "87654321",
     fechaNacimiento: "1978-07-22",
@@ -58,9 +57,9 @@ const clientesData = [
     valorMensual: 420
   },
   { 
-    id: 3, 
+    id: 11223344, 
     nombre: "Laura Sánchez", 
-    email: "laura.sanchez@email.com", 
+    email: "laura.sanchez@email.com",
     telefono: "+57 320 555 7890",
     cedula: "11223344",
     fechaNacimiento: "1992-11-08",
@@ -83,18 +82,44 @@ const GestionClientes = () => {
     fechaNacimiento: "",
     direccion: "",
     seguro: "Salud",
-    valorMensual: 69
+    valorMensual: 69,
   });
 
+  // Cargar clientes desde localStorage o usar los quemados si no hay nada
+  useEffect(() => {
+    const stored = localStorage.getItem("clientes");
+    if (stored) {
+      setClientes(JSON.parse(stored));
+    } else {
+      localStorage.setItem("clientes", JSON.stringify(clientesData));
+    }
+  }, []);
+
+  // Guardar cambios en localStorage cada vez que 'clientes' cambie
+  useEffect(() => {
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+  }, [clientes]);
+
+  // Validaciones e input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+
+    if (name === "fechaNacimiento") {
+      const selectedDate = new Date(value);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      if (selectedDate > hoy) {
+        alert("No se permite ingresar fechas futuras.");
+        return;
+      }
+    }
+
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
-      // Actualizar valor mensual según el tipo de seguro
-      ...(name === 'seguro' && {
-        valorMensual: value === 'Vida' ? 420 : 69
-      })
+      ...(name === "seguro" && {
+        valorMensual: value === "Vida" ? 420 : 69,
+      }),
     }));
   };
 
@@ -108,16 +133,18 @@ const GestionClientes = () => {
       fechaNacimiento: cliente.fechaNacimiento,
       direccion: cliente.direccion,
       seguro: cliente.seguro,
-      valorMensual: cliente.valorMensual
+      valorMensual: cliente.valorMensual,
     });
   };
 
   const handleUpdateCliente = () => {
-    setClientes(clientes.map(cliente => 
-      cliente.id === editingCliente.id 
-        ? { ...cliente, ...formData }
-        : cliente
-    ));
+    setClientes(
+      clientes.map((cliente) =>
+        cliente.id === editingCliente.id
+          ? { ...cliente, ...formData }
+          : cliente
+      )
+    );
     setEditingCliente(null);
     setFormData({
       nombre: "",
@@ -127,16 +154,19 @@ const GestionClientes = () => {
       fechaNacimiento: "",
       direccion: "",
       seguro: "Salud",
-      valorMensual: 69
+      valorMensual: 69,
     });
   };
 
+  // Activar/Desactivar clientes
   const handleToggleEstado = (id: number) => {
-    setClientes(clientes.map(cliente => 
-      cliente.id === id 
-        ? { ...cliente, estado: cliente.estado === 'Activo' ? 'Inactivo' : 'Activo' }
-        : cliente
-    ));
+    setClientes(
+      clientes.map((cliente) =>
+        cliente.id === id 
+          ? { ...cliente, estado: cliente.estado === "Activo" ? "Inactivo" : "Activo" }
+          : cliente
+      )
+    );
   };
 
   const ClienteForm = () => (
@@ -163,7 +193,7 @@ const GestionClientes = () => {
           />
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="email">Email</Label>
@@ -187,7 +217,7 @@ const GestionClientes = () => {
           />
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="fechaNacimiento">Fecha de Nacimiento</Label>
@@ -213,7 +243,7 @@ const GestionClientes = () => {
           </select>
         </div>
       </div>
-      
+
       <div>
         <Label htmlFor="direccion">Dirección</Label>
         <Input
@@ -240,29 +270,37 @@ const GestionClientes = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-salus-gray-light">Total Clientes</CardTitle>
+            <CardTitle className="text-sm font-medium text-salus-gray-light">
+              Total Clientes
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-salus-blue">{clientes.length}</div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-salus-gray-light">Clientes Activos</CardTitle>
+            <CardTitle className="text-sm font-medium text-salus-gray-light">
+              Clientes Activos
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {clientes.filter(c => c.estado === 'Activo').length}
+              {clientes.filter((c) => c.estado === "Activo").length}
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-salus-gray-light">Pendientes</CardTitle>
+            <CardTitle className="text-sm font-medium text-salus-gray-light">
+              Pendientes
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
-              {clientes.filter(c => c.estado === 'Pendiente').length}
+              {clientes.filter((c) => c.estado === "Pendiente").length}
             </div>
           </CardContent>
         </Card>
@@ -303,22 +341,27 @@ const GestionClientes = () => {
                       ${cliente.valorMensual}/mes
                     </TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        cliente.estado === 'Activo' 
-                          ? 'bg-green-100 text-green-800' 
-                          : cliente.estado === 'Pendiente'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          cliente.estado === "Activo"
+                            ? "bg-green-100 text-green-800"
+                            : cliente.estado === "Pendiente"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
                         {cliente.estado}
                       </span>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Dialog open={editingCliente?.id === cliente.id} onOpenChange={(open) => !open && setEditingCliente(null)}>
+                        <Dialog
+                          open={editingCliente?.id === cliente.id}
+                          onOpenChange={(open) => !open && setEditingCliente(null)}
+                        >
                           <DialogTrigger asChild>
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               onClick={() => handleEditCliente(cliente)}
                             >
@@ -334,22 +377,28 @@ const GestionClientes = () => {
                             </DialogHeader>
                             <ClienteForm />
                             <DialogFooter>
-                              <Button variant="outline" onClick={() => setEditingCliente(null)}>
+                              <Button
+                                variant="outline"
+                                onClick={() => setEditingCliente(null)}
+                              >
                                 Cancelar
                               </Button>
-                              <Button onClick={handleUpdateCliente} className="bg-salus-blue hover:bg-salus-blue-dark">
+                              <Button
+                                onClick={handleUpdateCliente}
+                                className="bg-salus-blue hover:bg-salus-blue-dark"
+                              >
                                 Actualizar
                               </Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
-                        
-                        <Button 
-                          variant={cliente.estado === 'Activo' ? 'destructive' : 'default'} 
+
+                        <Button
+                          variant={cliente.estado === "Activo" ? "destructive" : "default"}
                           size="sm"
                           onClick={() => handleToggleEstado(cliente.id)}
                         >
-                          {cliente.estado === 'Activo' ? 'Desactivar' : 'Activar'}
+                          {cliente.estado === "Activo" ? "Desactivar" : "Activar"}
                         </Button>
                       </div>
                     </TableCell>

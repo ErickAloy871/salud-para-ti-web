@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { useSolicitudes } from "@/context/SolicitudesContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -25,7 +23,6 @@ const formSchema = z.object({
 
 const Asesores = () => {
   const { toast } = useToast();
-  const { agregarSolicitud } = useSolicitudes();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,16 +37,29 @@ const Asesores = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const fechaActual = new Date().toLocaleDateString(); // Ej: "9/6/2025"
+
+    // Construir la solicitud con estado "pendiente"
     const solicitudData = {
+      id: Date.now().toString(), // ID único
       nombres: values.nombres,
       apellidos: values.apellidos,
       cedula: values.cedula,
       telefono: values.telefono,
       email: values.email,
       mensaje: values.mensaje,
+      fecha: fechaActual,
+      estado: "pendiente",
     };
-    
-    agregarSolicitud(solicitudData);
+
+    // Leer solicitudes existentes de localStorage
+    const storedSolicitudes = localStorage.getItem("solicitudes");
+    const listaSolicitudes = storedSolicitudes ? JSON.parse(storedSolicitudes) : [];
+
+    // Agregar la nueva solicitud y actualizar localStorage
+    const nuevasSolicitudes = [...listaSolicitudes, solicitudData];
+    localStorage.setItem("solicitudes", JSON.stringify(nuevasSolicitudes));
+
     toast({
       title: "Solicitud enviada",
       description: "Su solicitud ha sido registrada exitosamente.",
@@ -131,8 +141,8 @@ const Asesores = () => {
                         <FormControl>
                           <Input 
                             placeholder="Ej: 0987654321" 
-                            {...field} 
                             maxLength={10}
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -147,7 +157,11 @@ const Asesores = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="Ingrese su email" {...field} />
+                          <Input 
+                            type="email" 
+                            placeholder="Ingrese su email" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

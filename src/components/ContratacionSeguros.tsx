@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { FileText } from "lucide-react";
+import { ClientesContext } from "@/context/ClientesContext"; // Contexto global para clientes
 
 type FormData = {
   nombres: string;
@@ -23,54 +24,58 @@ type FormData = {
 
 const ContratacionSeguros = () => {
   const [formData, setFormData] = useState<FormData>({
-    nombres: '',
-    apellidos: '',
-    cedula: '',
-    email: '',
-    telefono: '',
-    direccion: '',
-    tipoSeguro: '',
-    planSeguro: '',
-    coberturaAdicional: '',
-    observaciones: '',
+    nombres: "",
+    apellidos: "",
+    cedula: "",
+    email: "",
+    telefono: "",
+    direccion: "",
+    tipoSeguro: "",
+    planSeguro: "",
+    coberturaAdicional: "",
+    observaciones: "",
   });
   const { toast } = useToast();
+  const { clientes, setClientes } = useContext(ClientesContext);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    // Validación especial para teléfono
-    if (name === 'telefono') {
-      // Solo permitir números y máximo 10 dígitos
-      const numbersOnly = value.replace(/\D/g, '').slice(0, 10);
-      setFormData(prev => ({ ...prev, [name]: numbersOnly }));
+    if (name === "telefono") {
+      const numbersOnly = value.replace(/\D/g, "").slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: numbersOnly }));
       return;
     }
-    
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTipoSeguroChange = (value: string) => {
-    setFormData(prev => ({ ...prev, tipoSeguro: value }));
+    setFormData((prev) => ({ ...prev, tipoSeguro: value }));
   };
 
   const handlePlanSeguroChange = (value: string) => {
-    setFormData(prev => ({ ...prev, planSeguro: value }));
+    setFormData((prev) => ({ ...prev, planSeguro: value }));
   };
 
   const handleCoberturaAdicionalChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, coberturaAdicional: e.target.value }));
+    setFormData((prev) => ({ ...prev, coberturaAdicional: e.target.value }));
   };
 
   const handleObservacionesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, observaciones: e.target.value }));
+    setFormData((prev) => ({ ...prev, observaciones: e.target.value }));
   };
 
-  const handleSubmit = (e: React.Event) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Validaciones
-    if (!formData.nombres || !formData.apellidos || !formData.cedula || !formData.email || !formData.telefono || !formData.tipoSeguro) {
+    if (
+      !formData.nombres ||
+      !formData.apellidos ||
+      !formData.cedula ||
+      !formData.email ||
+      !formData.telefono ||
+      !formData.tipoSeguro
+    ) {
       toast({
         title: "Error",
         description: "Todos los campos son obligatorios",
@@ -79,7 +84,6 @@ const ContratacionSeguros = () => {
       return;
     }
 
-    // Validar teléfono (máximo 10 dígitos)
     if (formData.telefono.length > 10 || !/^\d+$/.test(formData.telefono)) {
       toast({
         title: "Error",
@@ -89,24 +93,47 @@ const ContratacionSeguros = () => {
       return;
     }
 
-    console.log('Formulario de Contratación:', formData);
+    const nuevoCliente = {
+      id: Date.now(),
+      nombre: formData.nombres + " " + formData.apellidos,
+      email: formData.email,
+      telefono: formData.telefono,
+      cedula: formData.cedula,
+      fechaNacimiento: "",
+      direccion: formData.direccion,
+      seguro: formData.tipoSeguro,
+      valorMensual: formData.planSeguro === "Premium" ? 420 : 69,
+      estado: "Pendiente",
+    };
+
+    // Leer el localStorage antes de agregar
+    const stored = localStorage.getItem("clientes");
+    const listaExistente = stored ? JSON.parse(stored) : [];
+
+    // Agregar el nuevo cliente y actualizar localStorage
+    const nuevosClientes = [...listaExistente, nuevoCliente];
+    localStorage.setItem("clientes", JSON.stringify(nuevosClientes));
+
+    // Si quieres sincronizar con el contexto
+    setClientes(nuevosClientes);
+
     toast({
       title: "Contratación exitosa",
       description: "La contratación del seguro se ha registrado correctamente",
     });
 
-    // Resetear el formulario
+    // Limpiar el formulario
     setFormData({
-      nombres: '',
-      apellidos: '',
-      cedula: '',
-      email: '',
-      telefono: '',
-      direccion: '',
-      tipoSeguro: '',
-      planSeguro: '',
-      coberturaAdicional: '',
-      observaciones: '',
+      nombres: "",
+      apellidos: "",
+      cedula: "",
+      email: "",
+      telefono: "",
+      direccion: "",
+      tipoSeguro: "",
+      planSeguro: "",
+      coberturaAdicional: "",
+      observaciones: "",
     });
   };
 

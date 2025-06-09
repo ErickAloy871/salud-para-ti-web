@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -37,36 +36,23 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      // Cambia los nombres de los campos para coincidir con el backend
-      const response = await axios.post<LoginResponse>("http://localhost:8000/login", {
-        correo: formData.email,
-        password: formData.password,
-      });
+    // Leer clientes desde localStorage
+    const storedClientes = localStorage.getItem("clientes");
+    const clientes = storedClientes ? JSON.parse(storedClientes) : [];
 
-      const { usuario, token, mensaje } = response.data;
+    // Buscar cliente por correo y cédula
+    const cliente = clientes.find(
+      (c: any) => c.email === formData.email && c.cedula === formData.password
+    );
 
-      // Guarda el token para futuras peticiones protegidas
-      localStorage.setItem("token", token);
+    if (cliente) {
+      // Guardar cliente en localStorage para la sesión
+      localStorage.setItem("clienteLogueado", JSON.stringify(cliente));
 
-      alert(mensaje);
-
-      // Redirige según el tipo de usuario
-      if (usuario.tipo === 0) {
-        navigate("/admin");
-      } else if (usuario.tipo === 1) {
-        navigate("/cliente");
-      } else if (usuario.tipo === 2) {
-        navigate("/asesor");
-      } else {
-        alert("Tipo de usuario no reconocido");
-      }
-    } catch (error: any) {
-      console.error("Error al iniciar sesión:", error);
-      alert(
-        error.response?.data?.error ||
-        "Credenciales incorrectas o error de conexión"
-      );
+      // Redirigir al dashboard del cliente
+      navigate("/cliente-dashboard");
+    } else {
+      alert("Correo o cédula incorrectos. Por favor, verifica tus datos.");
     }
   };
 
