@@ -207,27 +207,10 @@ const ContratacionSeguros = () => {
                 <SelectContent>
                   <SelectItem value="Salud">Salud</SelectItem>
                   <SelectItem value="Vida">Vida</SelectItem>
-                  <SelectItem value="Autos">Autos</SelectItem>
-                  <SelectItem value="Hogar">Hogar</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
-              <Label htmlFor="planSeguro">Plan de Seguro</Label>
-              <Select value={formData.planSeguro} onValueChange={handlePlanSeguroChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione el plan de seguro" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Basico">Básico</SelectItem>
-                  <SelectItem value="Estandar">Estándar</SelectItem>
-                  <SelectItem value="Premium">Premium</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
+                       <div>
               <Label htmlFor="coberturaAdicional">Cobertura Adicional</Label>
               <Textarea
                 id="coberturaAdicional"
