@@ -143,12 +143,6 @@ const LoginPage = () => {
                   Recordarme
                 </label>
               </div>
-
-              <div className="text-sm">
-                <a href="#" className="font-medium text-salus-blue hover:text-salus-blue-dark">
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
             </div>
 
             <Button
@@ -158,15 +152,6 @@ const LoginPage = () => {
               Iniciar Sesión
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-salus-gray-light">
-              ¿No tienes una cuenta?{" "}
-              <a href="#" className="font-medium text-salus-blue hover:text-salus-blue-dark">
-                Regístrate aquí
-              </a>
-            </p>
-          </div>
 
           <div className="mt-4 text-center">
             <Link to="/" className="text-sm text-salus-gray-light hover:text-salus-blue">
