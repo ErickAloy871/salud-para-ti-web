@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import axios from "axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ const CrearUsuario = () => {
     setFormData(prev => ({ ...prev, tipo: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.nombre || !formData.apellido || !formData.correo || !formData.username || !formData.password || !formData.tipo || !formData.cedula || !formData.telefono) {
@@ -54,23 +54,30 @@ const CrearUsuario = () => {
       return;
     }
 
-    console.log('Crear usuario:', formData);
-    toast({
-      title: "Usuario creado",
-      description: "El usuario ha sido creado exitosamente",
-    });
-
-    setFormData({
-      nombre: '',
-      apellido: '',
-      correo: '',
-      username: '',
-      password: '',
-      tipo: '',
-      cedula: '',
-      telefono: ''
-    });
-    setIsOpen(false);
+    try {
+      await axios.post("http://localhost:8000/usuario", formData);
+      toast({
+        title: "Usuario creado",
+        description: "El usuario ha sido creado exitosamente",
+      });
+      setFormData({
+        nombre: '',
+        apellido: '',
+        correo: '',
+        username: '',
+        password: '',
+        tipo: '',
+        cedula: '',
+        telefono: ''
+      });
+      setIsOpen(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.error || "No se pudo crear el usuario",
+        variant: "destructive",
+      });
+    }
   };
 
   const getRoleName = (tipo: string) => {

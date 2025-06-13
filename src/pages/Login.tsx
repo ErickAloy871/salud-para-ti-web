@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -57,7 +56,7 @@ const LoginPage = () => {
       } else if (usuario.tipo === 1) {
         navigate("/cliente");
       } else if (usuario.tipo === 2) {
-        navigate("/asesor");
+        navigate("/agente");
       } else {
         alert("Tipo de usuario no reconocido");
       }
