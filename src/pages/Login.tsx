@@ -57,7 +57,7 @@ const LoginPage = () => {
       } else if (usuario.tipo === 1) {
         navigate("/cliente");
       } else if (usuario.tipo === 2) {
-        navigate("/asesor");
+        navigate("/agente");
       } else {
         alert("Tipo de usuario no reconocido");
       }
