@@ -72,30 +72,7 @@ const PerfilUsuario = ({
         
         <div className="px-2 py-2">
           <div className="text-xs text-gray-500">Rol: {usuario.rol}</div>
-          <div className="text-xs text-gray-500">Último acceso: {usuario.ultimoAcceso}</div>
         </div>
-        
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem className="cursor-pointer">
-          <User className="mr-2 h-4 w-4" />
-          <span>Mi Perfil</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem className="cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Configuración</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem 
-          className="cursor-pointer text-red-600 focus:text-red-600"
-          onClick={onCerrarSesion}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Cerrar Sesión</span>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
